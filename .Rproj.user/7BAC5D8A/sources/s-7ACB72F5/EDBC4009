@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1595250817043.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "EDBC4009",
+    "lastKnownWriteTime" : 1595266328,
+    "last_content_update" : 1595266328822,
+    "path" : "/media/ask/Data/Personal/Projects/Personal/FootballeR/POV/R/fGetTransformedCoordinates.R",
+    "project_path" : "R/fGetTransformedCoordinates.R",
+    "properties" : {
+        "cursorPosition" : "0,0",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

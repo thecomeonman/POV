@@ -1,0 +1,31 @@
+library(ggplot2)
+library(data.table)
+
+mCoordinates = cbind(
+   x = c(1,5,3,1),
+   y = c(3,7,9,3),
+   z = c(0,-3,-3,0)
+)
+
+mOrigin = cbind(0,0,5)
+
+mScreenCoordinate = cbind(0,0,0)
+
+mTransformedCoordinates = fGetTransformedCoordinates(
+   mCoordinates = mCoordinates,
+   mOrigin = mOrigin,
+   mScreenCoordinate = mScreenCoordinate
+)
+
+ggplot(
+   data.table(
+      x = mTransformedCoordinates[,1],
+      y = mTransformedCoordinates[,2]
+   )
+) + 
+   geom_path(
+      aes(
+         x = x,
+         y = y
+      )
+   )
