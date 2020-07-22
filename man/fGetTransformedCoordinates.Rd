@@ -8,6 +8,7 @@ fGetTransformedCoordinates(
   mCoordinates,
   mOrigin,
   mScreenCoordinate,
+  mZAxisVector = c(0, -1, 1),
   iTreatAs = 3
 )
 }

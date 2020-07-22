@@ -2,6 +2,9 @@
 
 rm(list = ls())
 
+source('/media/ask/Data/Personal/Projects/Personal/CodaBonito/R/fGetPitchDimensions.R')
+source('/media/ask/Data/Personal/Projects/Personal/CodaBonito/R/geom_pitch.R')
+
 library(data.table)
 library(ggplot2)
 library(POV)
@@ -27,13 +30,13 @@ mScreenCoordinate = cbind(
 
 mOrigin = cbind(
     60,
-    200,
+    -200,
     40
 )
 
 mScreenCoordinate = cbind(
-    60,
-    42,
+    20,
+    35,
     0
 )
 
@@ -47,7 +50,7 @@ qwe = fGetTransformedCoordinates(
     mCoordinates,
     mOrigin,
     mScreenCoordinate,
-    bTreatAsClosedPolyon = 1
+    iTreatAs = 1
 )
 
 p1 = ggplot() + geom_pitch(
@@ -79,7 +82,7 @@ mPassTransformedCoordinates1 = fGetTransformedCoordinates(
     mPassCoordinates1,
     mOrigin,
     mScreenCoordinate,
-    bTreatAsClosedPolyon = F
+    iTreatAs = 2
 )
 
 set.seed(1)
@@ -96,35 +99,35 @@ mRunTransformedCoordinates1 = fGetTransformedCoordinates(
     mRunCoordinates1,
     mOrigin,
     mScreenCoordinate,
-    bTreatAsClosedPolyon = F
+    iTreatAs = 2
 )
 
 mTransformedCoordinatesGroundProjection = fGetTransformedCoordinates(
     cbind(mPassCoordinates1[,1], mPassCoordinates1[,2], 0),
     mOrigin,
     mScreenCoordinate,
-    bTreatAsClosedPolyon = F
+    iTreatAs = 2
 )
 
 mStartPointProjection = fGetTransformedCoordinates(
     cbind(mPassCoordinates1[1,1] + (cos(vnAngles) * nRadius), mPassCoordinates1[1,2] + (sin(vnAngles) * nRadius), 0),
     mOrigin,
     mScreenCoordinate,
-    bTreatAsClosedPolyon = T
+    iTreatAs = 3
 )
 
 mEndPointProjection = fGetTransformedCoordinates(
     cbind(mPassCoordinates1[nrow(mPassCoordinates1),1] + (cos(vnAngles) * nRadius), mPassCoordinates1[nrow(mPassCoordinates1),2] + (sin(vnAngles) * nRadius), 0),
     mOrigin,
     mScreenCoordinate,
-    bTreatAsClosedPolyon = T
+    iTreatAs = 3
 )
 
 mRunPointProjection = fGetTransformedCoordinates(
     cbind(mRunCoordinates1[nrow(mRunCoordinates1),1] + (cos(vnAngles) * nRadius), mRunCoordinates1[nrow(mRunCoordinates1),2] + (sin(vnAngles) * nRadius), 0),
     mOrigin,
     mScreenCoordinate,
-    bTreatAsClosedPolyon = T
+    iTreatAs = 3
 )
 
 
@@ -139,7 +142,7 @@ mShotCoordinates1Trajectory = fGetTransformedCoordinates(
     mShotCoordinates1,
     mOrigin,
     mScreenCoordinate,
-    bTreatAsClosedPolyon = F
+    iTreatAs = 2
 )
 
 mShotCoordinates1Projection = fGetTransformedCoordinates(
@@ -150,7 +153,7 @@ mShotCoordinates1Projection = fGetTransformedCoordinates(
     ),
     mOrigin,
     mScreenCoordinate,
-    bTreatAsClosedPolyon = F
+    iTreatAs = 2
 )
 
 p1 + 

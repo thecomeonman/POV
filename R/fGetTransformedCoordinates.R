@@ -22,18 +22,19 @@ fGetTransformedCoordinates = function (
     mCoordinates,
     mOrigin,
     mScreenCoordinate,
+    mZAxisVector = c(0,0,1),
     iTreatAs = 3
 ) {
 
     viInputPoints = seq(nrow(mCoordinates))
 
-    fCrossProduct = function(mZAxisVectorNew, mYAxisVectorNew) {
+    fCrossProduct = function(v1, v2) {
 
         matrix(
            c(
-               ( mZAxisVectorNew[2] * mYAxisVectorNew[3] ) - ( mZAxisVectorNew[3] * mYAxisVectorNew[2] ),
-               ( mZAxisVectorNew[3] * mYAxisVectorNew[1] ) - ( mZAxisVectorNew[1] * mYAxisVectorNew[3] ),
-               ( mZAxisVectorNew[1] * mYAxisVectorNew[2] ) - ( mZAxisVectorNew[2] * mYAxisVectorNew[1] )
+               ( v1[2] * v2[3] ) - ( v1[3] * v2[2] ),
+               ( v1[3] * v2[1] ) - ( v1[1] * v2[3] ),
+               ( v1[1] * v2[2] ) - ( v1[2] * v2[1] )
            ),
            ncol = 3
         )
@@ -65,7 +66,9 @@ fGetTransformedCoordinates = function (
     # mScreenCoordinate = ( ( mOrigin - mScreenCoordinate) * 0.9999 ) + mScreenCoordinate
     # mScreenCoordinate = mScreenCoordinate
 
-    mZAxisVector = c(mScreenCoordinate[,1:2], mScreenCoordinate[,3] + 1)
+    # mZAxisVector = c(mScreenCoordinate[,1:2], mScreenCoordinate[,3] + 1)
+    # mZAxisVector = mScreenCoordinate[] + cbind(0,0,1)
+    mZAxisVector = ( mScreenCoordinate + mZAxisVector ) / ( sum(mZAxisVector^2) ^ 0.5 )
 
 
 
@@ -90,7 +93,7 @@ fGetTransformedCoordinates = function (
     # nDivisionPlaneCoefficients = nScreenPlaneCoefficients, right? Why isn't that working?
     mAnotherDivisionPlaneAxisVector = fCrossProduct(
         mZAxisVector - mScreenCoordinate,
-        mScreenCoordinate - mScreenCoordinate
+        mOrigin - mScreenCoordinate
     )
 
     # if the above two vectors are parallel, i.e. viewing direction is along z axis
