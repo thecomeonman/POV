@@ -13,6 +13,9 @@
 #' where the screen on which the scene is being projected on. Also dictates the
 #' direction along which which the scene is being viewed from
 #' @param iTreatAs 1 for isolated points, 2 for path, 3 for polygon
+#' @param bIgnorePointsBehindTheScreen if F, it projects points from behind the
+#' screen on to the screen, if T, it projects points from in front of the screen
+#' on to the screen.
 #' @return a matrix with 2 columns for the x,y coordinates on the screen + an
 #' optional column linking continuous stretches in front of the screening plane
 #' which can be used in geom_path(aes(group = V3))
@@ -23,112 +26,159 @@ fGetTransformedCoordinates = function (
     mOrigin,
     mScreenCoordinate,
     mZAxisVector = c(0,0,1),
-    iTreatAs = 3
+    iTreatAs = 3,
+    bIgnorePointsBehindTheScreen = F
 ) {
 
-    viInputPoints = seq(nrow(mCoordinates))
+    if ( T ) {
 
-    fCrossProduct = function(v1, v2) {
+        viInputPoints = seq(nrow(mCoordinates))
 
-        matrix(
-           c(
-               ( v1[2] * v2[3] ) - ( v1[3] * v2[2] ),
-               ( v1[3] * v2[1] ) - ( v1[1] * v2[3] ),
-               ( v1[1] * v2[2] ) - ( v1[2] * v2[1] )
-           ),
-           ncol = 3
-        )
+        fCrossProduct = function(v1, v2) {
 
-    }
+            matrix(
+               c(
+                   ( v1[2] * v2[3] ) - ( v1[3] * v2[2] ),
+                   ( v1[3] * v2[1] ) - ( v1[1] * v2[3] ),
+                   ( v1[1] * v2[2] ) - ( v1[2] * v2[1] )
+               ),
+               ncol = 3
+            )
 
-    # removing repeat points
-    if ( nrow(mCoordinates) > 1 & iTreatAs %in% c(2,3) ) {
+        }
 
-        viPointsToKeep = c(T, !rowSums(matrix(apply(mCoordinates, 2, diff), ncol = 3) ^ 2) == 0)
-        viInputPoints = viInputPoints[viPointsToKeep]
-        mCoordinates = mCoordinates[viPointsToKeep,]
+        # removing repeat points
+        if ( nrow(mCoordinates) > 1 & iTreatAs %in% c(2,3) ) {
 
-        if ( iTreatAs == 3 & nrow(mCoordinates) > 1 ) {
+            viPointsToKeep = c(T, !rowSums(matrix(apply(mCoordinates, 2, diff), ncol = 3) ^ 2) == 0)
+            viInputPoints = viInputPoints[viPointsToKeep]
+            mCoordinates = mCoordinates[viPointsToKeep,]
 
-            if (
-                all(
-                    mCoordinates[1,] == mCoordinates[nrow(mCoordinates),]
-                )
-            ) {
-                viInputPoints = viInputPoints[-nrow(mCoordinates)]
-                mCoordinates = mCoordinates[-nrow(mCoordinates),]
+            if ( iTreatAs == 3 & nrow(mCoordinates) > 1 ) {
+
+                if (
+                    all(
+                        mCoordinates[1,] == mCoordinates[nrow(mCoordinates),]
+                    )
+                ) {
+                    viInputPoints = viInputPoints[-nrow(mCoordinates)]
+                    mCoordinates = mCoordinates[-nrow(mCoordinates),]
+                }
+
             }
 
         }
 
+        # mScreenCoordinate = ( ( mOrigin - mScreenCoordinate) * 0.9999 ) + mScreenCoordinate
+        # mScreenCoordinate = mScreenCoordinate
+
+        # mZAxisVectorOnScreen = c(mScreenCoordinate[,1:2], mScreenCoordinate[,3] + 1)
+        # mZAxisVectorOnScreen = mScreenCoordinate[] + cbind(0,0,1)
+        mZAxisVectorOnScreen = mScreenCoordinate + ( mZAxisVector / ( sum(mZAxisVector^2) ^ 0.5 ) )
+
+        # this is the plane on which to project the data
+        # normal vector = (a,b,c)
+        # a(x - x1) + b(y - y1) + c(z - z1) = 0
+        nScreenPlaneCoefficients = c(
+            mScreenCoordinate[, 1] - mOrigin[, 1],
+            mScreenCoordinate[, 2] - mOrigin[, 2],
+            mScreenCoordinate[, 3] - mOrigin[, 3],
+            0
+            + ( ( mScreenCoordinate[, 1] - mOrigin[, 1] ) * mScreenCoordinate[, 1] )
+            + ( ( mScreenCoordinate[, 2] - mOrigin[, 2] ) * mScreenCoordinate[, 2]  )
+            + ( ( mScreenCoordinate[, 3] - mOrigin[, 3] ) * mScreenCoordinate[, 3]  )
+        )
+
+
+
+        # We can't let points all the way till on the screen plane be visualised because
+        # the coordinates for them will be ~inf. So we'll only include points which
+        # are at least a little ahead of mScreenCoordinate from the direction of mOrigin
+
+        if ( bIgnorePointsBehindTheScreen ) {
+
+            mZAxisVectorOnOrigin = mOrigin + ( mZAxisVector / ( sum(mZAxisVector^2) ^ 0.5 ) )
+
+            # nDivisionPlaneCoefficients = nScreenPlaneCoefficients, right? Why isn't that working?
+            mAnotherDivisionPlaneAxisVector = fCrossProduct(
+                mZAxisVectorOnOrigin - mOrigin,
+                mScreenCoordinate - mOrigin
+            )
+
+            # if the above two vectors are parallel, i.e. viewing direction is along z axis
+            if ( sum(mAnotherDivisionPlaneAxisVector) == 0 ) {
+
+                nDivisionPlaneCoefficients = c(
+                    nScreenPlaneCoefficients[1:3],
+                    nScreenPlaneCoefficients[4] - cbind(mOrigin, 1) %*% nScreenPlaneCoefficients
+                )
+
+            } else {
+
+                mAnotherDivisionPlaneAxisVector = ( mAnotherDivisionPlaneAxisVector / sum(mAnotherDivisionPlaneAxisVector ^ 2 ) ^ 0.5 )
+                nDivisionPlaneCoefficients = fCrossProduct(mZAxisVectorOnOrigin - mOrigin, mAnotherDivisionPlaneAxisVector)
+                nDivisionPlaneCoefficients = c(
+                    nDivisionPlaneCoefficients,
+                    -sum(nDivisionPlaneCoefficients * mOrigin)
+                )
+            }
+
+            # ... i.e on the other side of the plane as the screen coordinate
+            bOriginDestinationInPositiveDirection = sum(nDivisionPlaneCoefficients * c(mScreenCoordinate, 1)) > 0
+
+
+        } else {
+
+            # nDivisionPlaneCoefficients = nScreenPlaneCoefficients, right? Why isn't that working?
+            mAnotherDivisionPlaneAxisVector = fCrossProduct(
+                mZAxisVectorOnScreen - mScreenCoordinate,
+                mOrigin - mScreenCoordinate
+            )
+
+            # if the above two vectors are parallel, i.e. viewing direction is along z axis
+            if ( sum(mAnotherDivisionPlaneAxisVector) == 0 ) {
+
+                nDivisionPlaneCoefficients = c(
+                    nScreenPlaneCoefficients[1:3],
+                    nScreenPlaneCoefficients[4] - cbind(mScreenCoordinate, 1) %*% nScreenPlaneCoefficients
+                )
+
+            } else {
+
+                mAnotherDivisionPlaneAxisVector = ( mAnotherDivisionPlaneAxisVector / sum(mAnotherDivisionPlaneAxisVector ^ 2 ) ^ 0.5 )
+                nDivisionPlaneCoefficients = fCrossProduct(mZAxisVectorOnScreen - mScreenCoordinate, mAnotherDivisionPlaneAxisVector)
+                nDivisionPlaneCoefficients = c(
+                    nDivisionPlaneCoefficients,
+                    -sum(nDivisionPlaneCoefficients * mScreenCoordinate)
+                )
+            }
+
+            # ... i.e on the other side of the plane as the origin
+            bOriginDestinationInPositiveDirection = sum(nDivisionPlaneCoefficients * c(mOrigin, 1)) < 0
+
+        }
+
+        # handling points behind the screen
+        # retaining at most two points behind the screen for each stretch of points
+        # behind the screen so that closed polygons from the points ahead of the screen
+        # can be computed
+        vbCoordinatesToTransform = c(
+            bOriginDestinationInPositiveDirection == (
+                cbind(mCoordinates, 1) %*% nDivisionPlaneCoefficients >= 0
+            )
+        )
+
+        # return empty dataset if all points are behind screen
+        if ( all(!vbCoordinatesToTransform) ) {
+            return ( mOrigin[0,] )
+        }
+
     }
 
-    # mScreenCoordinate = ( ( mOrigin - mScreenCoordinate) * 0.9999 ) + mScreenCoordinate
-    # mScreenCoordinate = mScreenCoordinate
-
-    # mZAxisVector = c(mScreenCoordinate[,1:2], mScreenCoordinate[,3] + 1)
-    # mZAxisVector = mScreenCoordinate[] + cbind(0,0,1)
-    mZAxisVector = ( mScreenCoordinate + mZAxisVector ) / ( sum(mZAxisVector^2) ^ 0.5 )
-
-
-
-    # this is the plane on which to project the data
-    # normal vector = (a,b,c)
-    # a(x - x1) + b(y - y1) + c(z - z1) = 0
-    nScreenPlaneCoefficients = c(
-        mScreenCoordinate[, 1] - mOrigin[, 1],
-        mScreenCoordinate[, 2] - mOrigin[, 2],
-        mScreenCoordinate[, 3] - mOrigin[, 3],
-        0
-        + ( ( mScreenCoordinate[, 1] - mOrigin[, 1] ) * mScreenCoordinate[, 1] )
-        + ( ( mScreenCoordinate[, 2] - mOrigin[, 2] ) * mScreenCoordinate[, 2]  )
-        + ( ( mScreenCoordinate[, 3] - mOrigin[, 3] ) * mScreenCoordinate[, 3]  )
-    )
-
-
-
-    # We can't let points all the way till on the screen plane be visualised because
-    # the coordinates for them will be ~inf. So we'll only include points which
-    # are at least a little ahead of mScreenCoordinate from the direction of mOrigin
-    # nDivisionPlaneCoefficients = nScreenPlaneCoefficients, right? Why isn't that working?
-    mAnotherDivisionPlaneAxisVector = fCrossProduct(
-        mZAxisVector - mScreenCoordinate,
-        mOrigin - mScreenCoordinate
-    )
-
-    # if the above two vectors are parallel, i.e. viewing direction is along z axis
-    if ( sum(mAnotherDivisionPlaneAxisVector) == 0 ) {
-        nDivisionPlaneCoefficients = c(
-            nScreenPlaneCoefficients[1:3],
-            nScreenPlaneCoefficients[4] - cbind(mScreenCoordinate, 1) %*% nScreenPlaneCoefficients
-        )
-    } else {
-
-        mAnotherDivisionPlaneAxisVector = ( mAnotherDivisionPlaneAxisVector / sum(mAnotherDivisionPlaneAxisVector ^ 2 ) ^ 0.5 )
-        nDivisionPlaneCoefficients = fCrossProduct(mZAxisVector - mScreenCoordinate, mAnotherDivisionPlaneAxisVector)
-        nDivisionPlaneCoefficients = c(
-            nDivisionPlaneCoefficients,
-            -sum(nDivisionPlaneCoefficients * mScreenCoordinate)
-        )
-    }
-    # ... i.e on the other side of the plane as the origin
-    bOriginDestinationInPositiveDirection = sum(nDivisionPlaneCoefficients * c(mOrigin, 1)) < 0
-
-    # handling points behind the screen
-    # retaining at most two points behind the screen should remain for each stretch of points
-    # behind the screen so that closed polygons from the points ahead of the screen can be
-    # computed
-    vbCoordinatesToTransform = c(
-        bOriginDestinationInPositiveDirection == (
-            cbind(mCoordinates, 1) %*% nDivisionPlaneCoefficients >= 0
-        )
-    )
-
-    # return empty dataset if all points are behind screen
-    if ( all(!vbCoordinatesToTransform) ) {
-        return ( mOrigin[0,] )
-    }
-
+    # if being treated as isolated points then just drop the points not in the
+    # view, else treat it as a path or a polyogn and from every stretch of
+    # points outside the view, retain the first and last point and drop the
+    # inbetween n - 2 points
     if ( iTreatAs == 1 ) {
 
         viInputPoints = viInputPoints[vbCoordinatesToTransform]
@@ -262,7 +312,7 @@ fGetTransformedCoordinates = function (
                             #     vbCoordinatesToTransform,
                             #     function(x) ifelse(is.na(x),-1,x)
                             # )
-                            zoo::na.locf(vbCoordinatesToTransform)
+                            na.locf(vbCoordinatesToTransform)
                         ) != 0
                     )
                 )
@@ -377,7 +427,7 @@ fGetTransformedCoordinates = function (
         # can parameterise this also maybe
         mCoordinates = rbind(
             mCoordinates,
-            mZAxisVector
+            mZAxisVectorOnScreen
         )
 
         mLHSBase = matrix(nScreenPlaneCoefficients[1:3], ncol = 3)

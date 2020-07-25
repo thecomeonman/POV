@@ -8,8 +8,9 @@ fGetTransformedCoordinates(
   mCoordinates,
   mOrigin,
   mScreenCoordinate,
-  mZAxisVector = c(0, -1, 1),
-  iTreatAs = 3
+  mZAxisVector = c(0, 0, 1),
+  iTreatAs = 3,
+  bIgnorePointsBehindTheScreen = F
 )
 }
 \arguments{
@@ -30,6 +31,10 @@ where the screen on which the scene is being projected on. Also dictates the
 direction along which which the scene is being viewed from}
 
 \item{iTreatAs}{1 for isolated points, 2 for path, 3 for polygon}
+
+\item{bIgnorePointsBehindTheScreen}{if F, it projects points from behind the
+screen on to the screen, if T, it projects points from in front of the screen
+on to the screen.}
 }
 \value{
 a matrix with 2 columns for the x,y coordinates on the screen + an
