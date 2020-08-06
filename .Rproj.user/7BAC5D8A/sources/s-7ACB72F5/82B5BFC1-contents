@@ -4,6 +4,7 @@ rm(list = ls())
 
 source('/media/ask/Data/Personal/Projects/Personal/CodaBonito/R/fGetPitchDimensions.R')
 source('/media/ask/Data/Personal/Projects/Personal/CodaBonito/R/geom_pitch.R')
+source('/media/ask/Data/Personal/Projects/Personal/CodaBonito/R/theme_pitch.R')
 
 library(data.table)
 library(ggplot2)
@@ -18,40 +19,16 @@ nYEnd = 80
 
 mOrigin = cbind(
     60,
-    30,
-    40
+    200,
+    80
 )
 
 mScreenCoordinate = cbind(
-    70,
-    35,
-    0
-)
-
-mOrigin = cbind(
     60,
-    -200,
-    40
-)
-
-mScreenCoordinate = cbind(
-    20,
-    35,
+    100,
     0
 )
 
-mCoordinates = (cbind(
-  x = seq(0,2*pi,0.01) * 60/pi,
-  y = cos(seq(0,2*pi,0.01)) * 80,
-  z = 0
-))
-
-qwe = fGetTransformedCoordinates(
-    mCoordinates,
-    mOrigin,
-    mScreenCoordinate,
-    iTreatAs = 1
-)
 
 p1 = ggplot() + geom_pitch(
    nXStart = 0,
@@ -62,7 +39,7 @@ p1 = ggplot() + geom_pitch(
    mOrigin = mOrigin,
    mScreenCoordinate = mScreenCoordinate
 ) + 
-   # theme_pitch() +
+   theme_pitch() +
    theme(
       plot.background = element_rect( fill = '#444444' ),
       legend.position = 'none'
@@ -140,6 +117,13 @@ mShotCoordinates1 = matrix(rep(s0, length(t)), ncol = 3, byrow = T) + ( t %*% u 
 
 mShotCoordinates1Trajectory = fGetTransformedCoordinates(
     mShotCoordinates1,
+    mOrigin,
+    mScreenCoordinate,
+    iTreatAs = 2
+)
+
+mShotCoordinates1TrajectoryOnGround = fGetTransformedCoordinates(
+    cbind(mShotCoordinates1[,1:2],0),
     mOrigin,
     mScreenCoordinate,
     iTreatAs = 2
@@ -251,6 +235,20 @@ p1 +
    ) + 
    geom_path(
       data = data.table(
+         x = mShotCoordinates1TrajectoryOnGround[,1],
+         y = mShotCoordinates1TrajectoryOnGround[,2],
+         group = mShotCoordinates1TrajectoryOnGround[,3]
+      ),
+      aes(
+         x = x,
+         y = y,
+         group = group
+      ),
+      color = 'red',
+      linetype = 2
+   ) + 
+   geom_path(
+      data = data.table(
          x = mShotCoordinates1Trajectory[,1],
          y = mShotCoordinates1Trajectory[,2],
          group = mShotCoordinates1Trajectory[,3]
@@ -262,4 +260,3 @@ p1 +
       ),
       color = 'red'
    )
-   

@@ -6,11 +6,11 @@
 \usage{
 fGetTransformedCoordinates(
   mCoordinates,
-  mOrigin,
-  mScreenCoordinate,
+  mOriginCoordinates,
+  mScreenCoordinates,
+  mViewBeginsFromCoordinates = NULL,
   mZAxisVector = c(0, 0, 1),
-  iTreatAs = 3,
-  bIgnorePointsBehindTheScreen = F
+  iTreatAs = 3
 )
 }
 \arguments{
@@ -23,23 +23,28 @@ and iTreatAs = F. That way, where the polygon / path went behind the
 screen, there will be a marker specifying that the line has to be broken there
 when plotting or anywhere else}
 
-\item{mOrigin}{three column, one row matrix specifying coordinates of where
+\item{mOriginCoordinates}{three column, one row matrix specifying coordinates of where
 the scene is being viewed from}
 
-\item{mScreenCoordinate}{three column, one row matrix specifying coordinates of
+\item{mScreenCoordinates}{three column, one row matrix specifying coordinates of
 where the screen on which the scene is being projected on. Also dictates the
 direction along which which the scene is being viewed from}
 
-\item{iTreatAs}{1 for isolated points, 2 for path, 3 for polygon}
+\item{mViewBeginsFromCoordinates}{if NULL, all objects in front of origin, where
+front is the direciton in which the screen coordinates are, are projected. If
+a set of coordinates is given then all objects in front of that coordinate, where
+front is the direciton in which the screen coordinates are, are retained, and
+other objects are treated as behind the view. If this coordinate is on the opposite
+side of the origin as the screen then you'll delete all objects and get an empty
+array in the results}
 
-\item{bIgnorePointsBehindTheScreen}{if F, it projects points from behind the
-screen on to the screen, if T, it projects points from in front of the screen
-on to the screen.}
+\item{iTreatAs}{1 for isolated points, 2 for path, 3 for polygon}
 }
 \value{
-a matrix with 2 columns for the x,y coordinates on the screen + an
-optional column linking continuous stretches in front of the screening plane
-which can be used in geom_path(aes(group = V3))
+If inputs are valid, a matrix with 2 columns for the x,y coordinates 
+on the screen + an optional column linking continuous stretches in front of 
+the screening plane which can be used in geom_path(aes(group = V3)). If invalid 
+inputs then you'll get a NULL.
 }
 \description{
 Transforming coordinate spaces

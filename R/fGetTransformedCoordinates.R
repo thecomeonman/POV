@@ -1,4 +1,5 @@
 #' Transforming coordinate spaces
+#' 
 #' @param mCoordinates matrix with three columns - x,y,z coorinates.
 #' if mCoordinates is an isolated point then it is treated
 #' as an isolated point, if it is two points, it is treated as a line segment,
@@ -7,27 +8,32 @@
 #' and iTreatAs = F. That way, where the polygon / path went behind the
 #' screen, there will be a marker specifying that the line has to be broken there
 #' when plotting or anywhere else
-#' @param mOrigin three column, one row matrix specifying coordinates of where
+#' @param mOriginCoordinates three column, one row matrix specifying coordinates of where
 #' the scene is being viewed from
-#' @param mScreenCoordinate three column, one row matrix specifying coordinates of
+#' @param mScreenCoordinates three column, one row matrix specifying coordinates of
 #' where the screen on which the scene is being projected on. Also dictates the
 #' direction along which which the scene is being viewed from
 #' @param iTreatAs 1 for isolated points, 2 for path, 3 for polygon
-#' @param bIgnorePointsBehindTheScreen if F, it projects points from behind the
-#' screen on to the screen, if T, it projects points from in front of the screen
-#' on to the screen.
-#' @return a matrix with 2 columns for the x,y coordinates on the screen + an
-#' optional column linking continuous stretches in front of the screening plane
-#' which can be used in geom_path(aes(group = V3))
+#' @param mViewBeginsFromCoordinates if NULL, all objects in front of origin, where
+#' front is the direciton in which the screen coordinates are, are projected. If
+#' a set of coordinates is given then all objects in front of that coordinate, where
+#' front is the direciton in which the screen coordinates are, are retained, and
+#' other objects are treated as behind the view. If this coordinate is on the opposite
+#' side of the origin as the screen then you'll delete all objects and get an empty
+#' array in the results
+#' @return If inputs are valid, a matrix with 2 columns for the x,y coordinates 
+#' on the screen + an optional column linking continuous stretches in front of 
+#' the screening plane which can be used in geom_path(aes(group = V3)). If invalid 
+#' inputs then you'll get a NULL.
 #' @import zoo
 #' @export
 fGetTransformedCoordinates = function (
     mCoordinates,
-    mOrigin,
-    mScreenCoordinate,
+    mOriginCoordinates,
+    mScreenCoordinates,
+    mViewBeginsFromCoordinates = NULL,
     mZAxisVector = c(0,0,1),
-    iTreatAs = 3,
-    bIgnorePointsBehindTheScreen = F
+    iTreatAs = 3    
 ) {
 
     if ( T ) {
@@ -69,40 +75,40 @@ fGetTransformedCoordinates = function (
 
         }
 
-        # mScreenCoordinate = ( ( mOrigin - mScreenCoordinate) * 0.9999 ) + mScreenCoordinate
-        # mScreenCoordinate = mScreenCoordinate
+        # mScreenCoordinates = ( ( mOriginCoordinates - mScreenCoordinates) * 0.9999 ) + mScreenCoordinates
+        # mScreenCoordinates = mScreenCoordinates
 
-        # mZAxisVectorOnScreen = c(mScreenCoordinate[,1:2], mScreenCoordinate[,3] + 1)
-        # mZAxisVectorOnScreen = mScreenCoordinate[] + cbind(0,0,1)
-        mZAxisVectorOnScreen = mScreenCoordinate + ( mZAxisVector / ( sum(mZAxisVector^2) ^ 0.5 ) )
+        # mZAxisVectorOnScreen = c(mScreenCoordinates[,1:2], mScreenCoordinates[,3] + 1)
+        # mZAxisVectorOnScreen = mScreenCoordinates[] + cbind(0,0,1)
+        mZAxisVectorOnScreen = mScreenCoordinates + ( mZAxisVector / ( sum(mZAxisVector^2) ^ 0.5 ) )
 
         # this is the plane on which to project the data
         # normal vector = (a,b,c)
         # a(x - x1) + b(y - y1) + c(z - z1) = 0
         nScreenPlaneCoefficients = c(
-            mScreenCoordinate[, 1] - mOrigin[, 1],
-            mScreenCoordinate[, 2] - mOrigin[, 2],
-            mScreenCoordinate[, 3] - mOrigin[, 3],
+            mScreenCoordinates[, 1] - mOriginCoordinates[, 1],
+            mScreenCoordinates[, 2] - mOriginCoordinates[, 2],
+            mScreenCoordinates[, 3] - mOriginCoordinates[, 3],
             0
-            + ( ( mScreenCoordinate[, 1] - mOrigin[, 1] ) * mScreenCoordinate[, 1] )
-            + ( ( mScreenCoordinate[, 2] - mOrigin[, 2] ) * mScreenCoordinate[, 2]  )
-            + ( ( mScreenCoordinate[, 3] - mOrigin[, 3] ) * mScreenCoordinate[, 3]  )
+            + ( ( mScreenCoordinates[, 1] - mOriginCoordinates[, 1] ) * mScreenCoordinates[, 1] )
+            + ( ( mScreenCoordinates[, 2] - mOriginCoordinates[, 2] ) * mScreenCoordinates[, 2]  )
+            + ( ( mScreenCoordinates[, 3] - mOriginCoordinates[, 3] ) * mScreenCoordinates[, 3]  )
         )
 
 
 
         # We can't let points all the way till on the screen plane be visualised because
         # the coordinates for them will be ~inf. So we'll only include points which
-        # are at least a little ahead of mScreenCoordinate from the direction of mOrigin
+        # are at least a little ahead of mScreenCoordinates from the direction of mOriginCoordinates
 
-        if ( bIgnorePointsBehindTheScreen ) {
+        if ( is.null(mViewBeginsFromCoordinates) ) {
 
-            mZAxisVectorOnOrigin = mOrigin + ( mZAxisVector / ( sum(mZAxisVector^2) ^ 0.5 ) )
+            mZAxisVectorOnOrigin = mOriginCoordinates + ( mZAxisVector / ( sum(mZAxisVector^2) ^ 0.5 ) )
 
             # nDivisionPlaneCoefficients = nScreenPlaneCoefficients, right? Why isn't that working?
             mAnotherDivisionPlaneAxisVector = fCrossProduct(
-                mZAxisVectorOnOrigin - mOrigin,
-                mScreenCoordinate - mOrigin
+                mZAxisVectorOnOrigin - mOriginCoordinates,
+                mScreenCoordinates - mOriginCoordinates
             )
 
             # if the above two vectors are parallel, i.e. viewing direction is along z axis
@@ -110,29 +116,31 @@ fGetTransformedCoordinates = function (
 
                 nDivisionPlaneCoefficients = c(
                     nScreenPlaneCoefficients[1:3],
-                    nScreenPlaneCoefficients[4] - cbind(mOrigin, 1) %*% nScreenPlaneCoefficients
+                    nScreenPlaneCoefficients[4] - cbind(mOriginCoordinates, 1) %*% nScreenPlaneCoefficients
                 )
 
             } else {
 
                 mAnotherDivisionPlaneAxisVector = ( mAnotherDivisionPlaneAxisVector / sum(mAnotherDivisionPlaneAxisVector ^ 2 ) ^ 0.5 )
-                nDivisionPlaneCoefficients = fCrossProduct(mZAxisVectorOnOrigin - mOrigin, mAnotherDivisionPlaneAxisVector)
+                nDivisionPlaneCoefficients = fCrossProduct(mZAxisVectorOnOrigin - mOriginCoordinates, mAnotherDivisionPlaneAxisVector)
                 nDivisionPlaneCoefficients = c(
                     nDivisionPlaneCoefficients,
-                    -sum(nDivisionPlaneCoefficients * mOrigin)
+                    -sum(nDivisionPlaneCoefficients * mOriginCoordinates)
                 )
             }
 
-            # ... i.e on the other side of the plane as the screen coordinate
-            bOriginDestinationInPositiveDirection = sum(nDivisionPlaneCoefficients * c(mScreenCoordinate, 1)) > 0
+            # ... i.e on the side of the plane as the screen coordinate
+            bOriginDestinationInPositiveDirection = sum(nDivisionPlaneCoefficients * c(mScreenCoordinates, 1)) > 0
 
 
         } else {
 
+            mZAxisVectorAtViewBeginning = mViewBeginsFromCoordinates + ( mZAxisVector / ( sum(mZAxisVector^2) ^ 0.5 ) )
+
             # nDivisionPlaneCoefficients = nScreenPlaneCoefficients, right? Why isn't that working?
             mAnotherDivisionPlaneAxisVector = fCrossProduct(
-                mZAxisVectorOnScreen - mScreenCoordinate,
-                mOrigin - mScreenCoordinate
+                mZAxisVectorAtViewBeginning - mViewBeginsFromCoordinates,
+                mOriginCoordinates - mViewBeginsFromCoordinates
             )
 
             # if the above two vectors are parallel, i.e. viewing direction is along z axis
@@ -140,21 +148,21 @@ fGetTransformedCoordinates = function (
 
                 nDivisionPlaneCoefficients = c(
                     nScreenPlaneCoefficients[1:3],
-                    nScreenPlaneCoefficients[4] - cbind(mScreenCoordinate, 1) %*% nScreenPlaneCoefficients
+                    nScreenPlaneCoefficients[4] - cbind(mViewBeginsFromCoordinates, 1) %*% nScreenPlaneCoefficients
                 )
 
             } else {
 
                 mAnotherDivisionPlaneAxisVector = ( mAnotherDivisionPlaneAxisVector / sum(mAnotherDivisionPlaneAxisVector ^ 2 ) ^ 0.5 )
-                nDivisionPlaneCoefficients = fCrossProduct(mZAxisVectorOnScreen - mScreenCoordinate, mAnotherDivisionPlaneAxisVector)
+                nDivisionPlaneCoefficients = fCrossProduct(mZAxisVectorAtViewBeginning - mViewBeginsFromCoordinates, mAnotherDivisionPlaneAxisVector)
                 nDivisionPlaneCoefficients = c(
                     nDivisionPlaneCoefficients,
-                    -sum(nDivisionPlaneCoefficients * mScreenCoordinate)
+                    -sum(nDivisionPlaneCoefficients * mViewBeginsFromCoordinates)
                 )
             }
 
             # ... i.e on the other side of the plane as the origin
-            bOriginDestinationInPositiveDirection = sum(nDivisionPlaneCoefficients * c(mOrigin, 1)) < 0
+            bOriginDestinationInPositiveDirection = sum(nDivisionPlaneCoefficients * c(mOriginCoordinates, 1)) < 0
 
         }
 
@@ -170,7 +178,7 @@ fGetTransformedCoordinates = function (
 
         # return empty dataset if all points are behind screen
         if ( all(!vbCoordinatesToTransform) ) {
-            return ( mOrigin[0,] )
+            return ( NULL )
         }
 
     }
@@ -449,13 +457,13 @@ fGetTransformedCoordinates = function (
                 nOtherPoint = mCoordinates[iCoordinatesRow,]
 
                 if ( all(!is.na(nOtherPoint))) {
-                    if ( all(nOtherPoint == mScreenCoordinate ) ) {
+                    if ( all(nOtherPoint == mScreenCoordinates ) ) {
 
-                        mSolution = mScreenCoordinate
+                        mSolution = mScreenCoordinates
 
-                    } else if ( all(nOtherPoint == mOrigin ) ) {
+                    } else if ( all(nOtherPoint == mOriginCoordinates ) ) {
 
-                        mSolution = mOrigin
+                        mSolution = mOriginCoordinates
 
                     } else if (
                         sum(nScreenPlaneCoefficients[1:3] * nOtherPoint) == nScreenPlaneCoefficients[4]
@@ -464,7 +472,7 @@ fGetTransformedCoordinates = function (
                         mSolution = nOtherPoint
 
                     } else if (
-                        all ( ( nOtherPoint - mOrigin ) * ( mScreenCoordinate - mOrigin ) == 0 )
+                        all ( ( nOtherPoint - mOriginCoordinates ) * ( mScreenCoordinates - mOriginCoordinates ) == 0 )
                     ) {
 
                         mSolution = cbind(NA, NA, NA)
@@ -474,14 +482,14 @@ fGetTransformedCoordinates = function (
                         mLHS = mLHSBase
                         mRHS = mRHSBase
 
-                        viCoefficientsToIncorporate = which(nOtherPoint != mOrigin)
+                        viCoefficientsToIncorporate = which(nOtherPoint != mOriginCoordinates)
 
                         for ( iCoeff in setdiff(1:3, viCoefficientsToIncorporate) ) {
 
                             mLHSIncrement = matrix(c(0,0,0), ncol = 3)
                             mLHSIncrement[iCoeff] = 1
 
-                            mRHSIncrement = mOrigin[,iCoeff]
+                            mRHSIncrement = mOriginCoordinates[,iCoeff]
 
                             mLHS = rbind(
                                 mLHS,
@@ -510,8 +518,8 @@ fGetTransformedCoordinates = function (
                                 # a = x1 - x0
                                 # b = y1 - y0
                                 # bx - ay = bx0 - ay0
-                                b = ( mOrigin[,iIndex2] - nOtherPoint[iIndex2] )
-                                a = ( mOrigin[,iIndex1] - nOtherPoint[iIndex1] )
+                                b = ( mOriginCoordinates[,iIndex2] - nOtherPoint[iIndex2] )
+                                a = ( mOriginCoordinates[,iIndex1] - nOtherPoint[iIndex1] )
                                 mLHSIncrement[iIndex1] = + b
                                 mLHSIncrement[iIndex2] = - a
 
@@ -573,19 +581,19 @@ fGetTransformedCoordinates = function (
     # two coordinates
     if ( T ) {
 
-        mYAxisVectorNew = mYAxis - mScreenCoordinate
+        mYAxisVectorNew = mYAxis - mScreenCoordinates
         if ( all(mYAxisVectorNew == 0)) {
             mYAxisVectorNew = matrix(c(0,1,0), ncol = 3)
         }
         mYAxisVectorNew = mYAxisVectorNew / sum(mYAxisVectorNew^2) ^ 0.5
 
-        mZAxisVectorNew = mScreenCoordinate - mOrigin
+        mZAxisVectorNew = mScreenCoordinates - mOriginCoordinates
         mZAxisVectorNew = mZAxisVectorNew / sum(mZAxisVectorNew^2) ^ 0.5
 
         mXAxisVectorNew = fCrossProduct(mZAxisVectorNew, mYAxisVectorNew)
         mXAxisVectorNew = mXAxisVectorNew / sum(mXAxisVectorNew^2) ^ 0.5
 
-        mPlaneVectors = mSolutions - matrix( rep(mScreenCoordinate, nrow(mSolutions)), ncol = 3, byrow = T )
+        mPlaneVectors = mSolutions - matrix( rep(mScreenCoordinates, nrow(mSolutions)), ncol = 3, byrow = T )
 
         vnYCoord = mPlaneVectors %*% t(mYAxisVectorNew)
         vnXCoord = mPlaneVectors %*% t(mXAxisVectorNew)
