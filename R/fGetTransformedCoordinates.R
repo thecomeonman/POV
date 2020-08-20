@@ -1,5 +1,5 @@
 #' Transforming coordinate spaces
-#' 
+#'
 #' @param mCoordinates matrix with three columns - x,y,z coorinates.
 #' if mCoordinates is an isolated point then it is treated
 #' as an isolated point, if it is two points, it is treated as a line segment,
@@ -21,9 +21,9 @@
 #' other objects are treated as behind the view. If this coordinate is on the opposite
 #' side of the origin as the screen then you'll delete all objects and get an empty
 #' array in the results
-#' @return If inputs are valid, a matrix with 2 columns for the x,y coordinates 
-#' on the screen + an optional column linking continuous stretches in front of 
-#' the screening plane which can be used in geom_path(aes(group = V3)). If invalid 
+#' @return If inputs are valid, a matrix with 2 columns for the x,y coordinates
+#' on the screen + optional columns linking continuous stretches in front of
+#' the screening plane which can be used in geom_path(aes(group = V3)). If invalid
 #' inputs then you'll get a NULL.
 #' @import zoo
 #' @export
@@ -33,7 +33,7 @@ fGetTransformedCoordinates = function (
     mScreenCoordinates,
     mViewBeginsFromCoordinates = NULL,
     mZAxisVector = c(0,0,1),
-    iTreatAs = 3    
+    iTreatAs = 3
 ) {
 
     if ( T ) {
