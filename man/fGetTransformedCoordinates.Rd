@@ -41,9 +41,9 @@ array in the results}
 \item{iTreatAs}{1 for isolated points, 2 for path, 3 for polygon}
 }
 \value{
-If inputs are valid, a matrix with 2 columns for the x,y coordinates 
-on the screen + an optional column linking continuous stretches in front of 
-the screening plane which can be used in geom_path(aes(group = V3)). If invalid 
+If inputs are valid, a matrix with 2 columns for the x,y coordinates
+on the screen + optional columns linking continuous stretches in front of
+the screening plane which can be used in geom_path(aes(group = V3)). If invalid
 inputs then you'll get a NULL.
 }
 \description{

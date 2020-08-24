@@ -49,9 +49,9 @@ fGet3DTrajectoryBetweenTwoPoints = function(
    )
 
    cbind(
-      fGetDisplacement(ux, t * seq(0, timesteps) / timesteps, ax),
-      fGetDisplacement(uy, t * seq(0, timesteps) / timesteps, ay),
-      fGetDisplacement(uz, t * seq(0, timesteps) / timesteps, az)
+      x + fGetDisplacement(ux, t * seq(0, timesteps) / timesteps, ax),
+      y + fGetDisplacement(uy, t * seq(0, timesteps) / timesteps, ay),
+      z + fGetDisplacement(uz, t * seq(0, timesteps) / timesteps, az)
    )
 
 }

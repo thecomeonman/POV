@@ -130,7 +130,7 @@ fGetTransformedCoordinates = function (
             }
 
             # ... i.e on the side of the plane as the screen coordinate
-            bOriginDestinationInPositiveDirection = sum(nDivisionPlaneCoefficients * c(mScreenCoordinates, 1)) > 0
+            bOriginDestinationInPositiveDirection = sum(nDivisionPlaneCoefficients * c(mScreenCoordinates, 1)) >= 0
 
 
         } else {
@@ -342,7 +342,7 @@ fGetTransformedCoordinates = function (
 
                 vnDistancesFromPlane = cbind(mCoordinates[c(viCoordinatesToTransform[2], iNextPoint),], 1) %*% nDivisionPlaneCoefficients
 
-                mReplacementPoints = mCoordinates[viCoordinatesToTransform[2], ] - ( diff(mCoordinates[c(iNextPoint, viCoordinatesToTransform[2]),]) * abs(vnDistancesFromPlane[1]) / ( abs(vnDistancesFromPlane[1]) + abs(vnDistancesFromPlane[2]) ) )
+                mReplacementPoints = mCoordinates[viCoordinatesToTransform[2], ] - ( diff(mCoordinates[c(iNextPoint, viCoordinatesToTransform[2]),]) * ( 0.000000000001 + ( abs(vnDistancesFromPlane[1]) / ( abs(vnDistancesFromPlane[1]) + abs(vnDistancesFromPlane[2]) ) ) ) )
 
                 viReplacementPointSequence = viInputPoints[c(viCoordinatesToTransform[2])]
 
@@ -357,7 +357,7 @@ fGetTransformedCoordinates = function (
                     mCoordinates[c(iPrevPoint, viCoordinatesToTransform[1]),],
                 1) %*% nDivisionPlaneCoefficients
 
-                mReplacementPoints = mCoordinates[viCoordinatesToTransform[1], ] - ( diff(mCoordinates[c(iPrevPoint, viCoordinatesToTransform[1]),]) * abs(vnDistancesFromPlane[2]) / ( abs(vnDistancesFromPlane[1]) + abs(vnDistancesFromPlane[2]) ) )
+                mReplacementPoints = mCoordinates[viCoordinatesToTransform[1], ] - ( diff(mCoordinates[c(iPrevPoint, viCoordinatesToTransform[1]),]) * ( 0.000000000001 +  ( abs(vnDistancesFromPlane[2]) / ( abs(vnDistancesFromPlane[1]) + abs(vnDistancesFromPlane[2]) ) ) ) )
 
                 viReplacementPointSequence = viInputPoints[c(viCoordinatesToTransform[1])]
 
@@ -372,9 +372,9 @@ fGetTransformedCoordinates = function (
                 vnDistancesFromPlane = cbind(mCoordinates[c(iPrevPoint, viCoordinatesToTransform, iNextPoint),], 1) %*% nDivisionPlaneCoefficients
 
                 mReplacementPoints = rbind(
-                    mCoordinates[viCoordinatesToTransform[1], ] - ( diff(mCoordinates[c(iPrevPoint, viCoordinatesToTransform[1]),]) * abs(vnDistancesFromPlane[2]) / ( abs(vnDistancesFromPlane[1]) + abs(vnDistancesFromPlane[2]) ) ),
+                    mCoordinates[viCoordinatesToTransform[1], ] - ( diff(mCoordinates[c(iPrevPoint, viCoordinatesToTransform[1]),]) * ( 0.000000000001 + ( abs(vnDistancesFromPlane[2]) / ( abs(vnDistancesFromPlane[1]) + abs(vnDistancesFromPlane[2]) ) ) ) ),
                     cbind(NA,NA,NA),
-                    mCoordinates[viCoordinatesToTransform[2], ] - ( diff(mCoordinates[c(iNextPoint, viCoordinatesToTransform[2]),]) * abs(vnDistancesFromPlane[3]) / ( abs(vnDistancesFromPlane[3]) + abs(vnDistancesFromPlane[4]) ) )
+                    mCoordinates[viCoordinatesToTransform[2], ] - ( diff(mCoordinates[c(iNextPoint, viCoordinatesToTransform[2]),]) * ( 0.000000000001 + ( abs(vnDistancesFromPlane[3]) / ( abs(vnDistancesFromPlane[3]) + abs(vnDistancesFromPlane[4]) ) ) ) )
                 )
 
                 viReplacementPointSequence = c(
