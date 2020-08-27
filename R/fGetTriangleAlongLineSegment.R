@@ -1,5 +1,5 @@
 #' @export
-fDrawTriangleAlongLineSegment = function(
+fGetTriangleAlongLineSegment = function(
    x = 75,
    xend = 88.5,
    y = 8,
