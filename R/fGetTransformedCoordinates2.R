@@ -27,7 +27,7 @@
 #' inputs then you'll get a NULL.
 #' @import zoo
 #' @export
-fGetTransformedCoordinates = function (
+fGetTransformedCoordinates2 = function (
     mCoordinates,
     mOriginCoordinates,
     mScreenCoordinates,
@@ -90,9 +90,11 @@ fGetTransformedCoordinates = function (
 
         if ( is.null(mViewBeginsFromCoordinates) ) {
 
+            mZAxisVectorOnOrigin = mOriginCoordinates + ( mZAxisVector / ( sum(mZAxisVector^2) ^ 0.5 ) )
+
             # nDivisionPlaneCoefficients = nScreenPlaneCoefficients, right? Why isn't that working?
             mAnotherDivisionPlaneAxisVector = fCrossProduct(
-                ( mZAxisVector / ( sum(mZAxisVector^2) ^ 0.5 ) ),
+                mZAxisVectorOnOrigin - mOriginCoordinates,
                 mScreenCoordinates - mOriginCoordinates
             )
 
@@ -107,10 +109,7 @@ fGetTransformedCoordinates = function (
             } else {
 
                 mAnotherDivisionPlaneAxisVector = ( mAnotherDivisionPlaneAxisVector / sum(mAnotherDivisionPlaneAxisVector ^ 2 ) ^ 0.5 )
-                nDivisionPlaneCoefficients = fCrossProduct(
-                    ( mZAxisVector / ( sum(mZAxisVector^2) ^ 0.5 ) ), 
-                    mAnotherDivisionPlaneAxisVector
-                )
+                nDivisionPlaneCoefficients = fCrossProduct(mZAxisVectorOnOrigin - mOriginCoordinates, mAnotherDivisionPlaneAxisVector)
                 nDivisionPlaneCoefficients = c(
                     nDivisionPlaneCoefficients,
                     -sum(nDivisionPlaneCoefficients * mOriginCoordinates)
@@ -123,9 +122,11 @@ fGetTransformedCoordinates = function (
 
         } else {
 
+            mZAxisVectorAtViewBeginning = mViewBeginsFromCoordinates + ( mZAxisVector / ( sum(mZAxisVector^2) ^ 0.5 ) )
+
             # nDivisionPlaneCoefficients = nScreenPlaneCoefficients, right? Why isn't that working?
             mAnotherDivisionPlaneAxisVector = fCrossProduct(
-                ( mZAxisVector / ( sum(mZAxisVector^2) ^ 0.5 ) ),
+                mZAxisVectorAtViewBeginning - mViewBeginsFromCoordinates,
                 mOriginCoordinates - mViewBeginsFromCoordinates
             )
 
@@ -140,10 +141,7 @@ fGetTransformedCoordinates = function (
             } else {
 
                 mAnotherDivisionPlaneAxisVector = ( mAnotherDivisionPlaneAxisVector / sum(mAnotherDivisionPlaneAxisVector ^ 2 ) ^ 0.5 )
-                nDivisionPlaneCoefficients = fCrossProduct(
-                    ( mZAxisVector / ( sum(mZAxisVector^2) ^ 0.5 ) ), 
-                    mAnotherDivisionPlaneAxisVector
-                )
+                nDivisionPlaneCoefficients = fCrossProduct(mZAxisVectorAtViewBeginning - mViewBeginsFromCoordinates, mAnotherDivisionPlaneAxisVector)
                 nDivisionPlaneCoefficients = c(
                     nDivisionPlaneCoefficients,
                     -sum(nDivisionPlaneCoefficients * mViewBeginsFromCoordinates)
