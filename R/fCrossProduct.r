@@ -1,4 +1,4 @@
-
+#' @export
 fCrossProduct = function(v1, v2) {
 
     matrix(

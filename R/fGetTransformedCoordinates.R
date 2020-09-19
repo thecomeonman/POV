@@ -36,6 +36,9 @@ fGetTransformedCoordinates = function (
     iTreatAs = 3
 ) {
 
+    # print('~~~~')
+
+
     # some input parameters that need to be pre computed
     if ( T ) {
 
@@ -127,176 +130,34 @@ fGetTransformedCoordinates = function (
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-    # handling points behind the screen
     if ( T ) {
-
-        # retaining at most two points behind the screen for each stretch of points
-        # behind the screen so that closed polygons from the points ahead of the screen
-        # can be computed
-        vbCoordinatesToTransform = c(
-            bOriginDestinationInPositiveDirection == (
-                cbind(mCoordinates, 1) %*% nDivisionPlaneCoefficients >= 0
-            )
+        
+        # print('m0')
+        # print(head(mCoordinates))
+        # browser()
+        viPointsToKeep = fRemovePointsBehindDividingPlane(
+            mCoordinates = mCoordinates,
+            nDivisionPlaneCoefficients = nDivisionPlaneCoefficients,
+            bOriginDestinationInPositiveDirection = bOriginDestinationInPositiveDirection,
+            iTreatAs = iTreatAs
         )
 
-        # return empty dataset if all points are behind screen
-        if ( all(!vbCoordinatesToTransform) ) {
+        # print('return')
+        # print(viPointsToKeep)
+
+        if ( length(viPointsToKeep) == 0 ) {
+            
             return ( NULL )
+
         }
 
-    }
 
-    # if being treated as isolated points then just drop the points not in the
-    # view, else treat it as a path or a polyogn and from every stretch of
-    # points outside the view, retain the first and last point and drop the
-    # inbetween n - 2 points
-    if ( iTreatAs == 1 ) {
-
-        viInputPoints = viInputPoints[vbCoordinatesToTransform]
-        mCoordinates = mCoordinates[vbCoordinatesToTransform,]
-        vbCoordinatesToTransform = rep(T, length(viInputPoints))
-
-    } else {
-
-        # drawing continuous links between consecutive sets of points that 
-        # are in front or behind a screen
-        viFrontOfScreenStretches = cumsum(
-            c(
-                1,
-                abs(
-                    diff(vbCoordinatesToTransform)
-                )
-            )
-        )
-
-        # dropping the n-2 points in between and keeping the first and last
-        # point of every stretch that's behind the screen
-        viPointsToKeep = setdiff(
-            seq(nrow(mCoordinates)),
-            unlist(
-                c(
-                    lapply(
-                        unique(
-                            viFrontOfScreenStretches[
-                                vbCoordinatesToTransform == F
-                            ]
-                        ),
-                        function( iChunk ) {
-
-                            viIndices = which(viFrontOfScreenStretches == iChunk)
-
-                            if ( length(viIndices) > 2 ) {
-                                viIndicesToRemove = setdiff(viIndices, range(viIndices) )
-                            } else {
-                                viIndicesToRemove = -1
-                            }
-
-                            viIndicesToRemove
-
-                        }
-                    )
-                )
-            )
-        )
-
-        mCoordinates = mCoordinates[
-            viPointsToKeep,
-        ]
-
+        mCoordinates = mCoordinates[viPointsToKeep,]
         viInputPoints = viInputPoints[viPointsToKeep]
-
         mCoordinates = matrix(mCoordinates, ncol = 3)
 
 
 
-
-
-
-
-
-
-
-
-        # if the start and the end stretches of the coordinates are both behind the polygon
-        # then compress them into a single stretch and cycle the polygon coordinates
-        # such that the starting coordinate is ahead of the screen.
-        # THIS CHANGES THE ORDER OF POINTS for closed polygons
-
-        vbCoordinatesToTransform = c(
-            bOriginDestinationInPositiveDirection == (
-                cbind(mCoordinates, 1) %*% nDivisionPlaneCoefficients >= 0
-            )
-        )
-
-        viFrontOfScreenStretches = cumsum(c(1,abs(diff(vbCoordinatesToTransform))))
-
-        if ( all(!vbCoordinatesToTransform[viFrontOfScreenStretches %in% range(viFrontOfScreenStretches)]) ) {
-
-            viPointsToKeep = max(which(viFrontOfScreenStretches == 1)):min(which(viFrontOfScreenStretches == max(viFrontOfScreenStretches)))
-
-            if ( iTreatAs == 3 ) {
-
-                viPointsToKeep = c(viPointsToKeep[-1],viPointsToKeep[1])
-
-            }
-
-            viInputPoints = viInputPoints[viPointsToKeep]
-            mCoordinates = mCoordinates[viPointsToKeep, ]
-
-        }
-
-        mCoordinates = matrix(mCoordinates, ncol = 3)
-
-        if ( nrow(mCoordinates) >= 2 ) {
-
-            vbCoordinatesToTransform = c(
-                bOriginDestinationInPositiveDirection == (
-                    cbind(mCoordinates, 1) %*% nDivisionPlaneCoefficients >= 0
-                )
-            )
-
-            # if it's just a path then just drop the F stretch at the start
-            if ( vbCoordinatesToTransform[1] == F & vbCoordinatesToTransform[2] == F & iTreatAs != 3 ) {
-
-                viInputPoints = viInputPoints[-1]
-                mCoordinates = mCoordinates[-1,]
-
-            }
-
-        }
-
-
-        if ( nrow(mCoordinates) >= 2 ) {
-
-            vbCoordinatesToTransform = c(
-                bOriginDestinationInPositiveDirection == (
-                    cbind(mCoordinates, 1) %*% nDivisionPlaneCoefficients >= 0
-                )
-            )
-
-            if (
-                vbCoordinatesToTransform[length(vbCoordinatesToTransform)] == F &
-                vbCoordinatesToTransform[length(vbCoordinatesToTransform)-1] == F &
-                iTreatAs != 3
-            ) {
-
-                viInputPoints = viInputPoints[-nrow(mCoordinates) ]
-                mCoordinates = mCoordinates[-nrow(mCoordinates), ]
-
-            }
-
-        }
 
         # interpolating the connecting points between the adjacent behind screen - in front of screen points
         # such that the connecting point is a point on the screen

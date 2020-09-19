@@ -1,4 +1,4 @@
-
+#' @export
 fGetPlaneAt = function(
     mOriginCoordinates,
     mVector1,
