@@ -36,6 +36,55 @@ fGetTransformedCoordinates = function (
     iTreatAs = 3
 ) {
 
+    # some input parameters that need to be pre computed
+    if ( T ) {
+
+
+        # This is needed only for y axis of final projection
+        mYAxisVectorOnScreen = mScreenCoordinates + ( mZAxisVector / ( sum(mZAxisVector^2) ^ 0.5 ) )
+
+
+        # this is the plane on which to project the data
+        # normal vector = (a,b,c)
+        # a(x - x1) + b(y - y1) + c(z - z1) = 0
+        nScreenPlaneCoefficients = c(
+            mScreenCoordinates - mOriginCoordinates,
+            sum( 
+                ( mScreenCoordinates - mOriginCoordinates ) * mScreenCoordinates 
+            )
+        )
+
+
+        # We can't let points all the way till on the screen plane be visualised because
+        # the coordinates for them will be ~inf. So we'll only include points which
+        # are at least a little ahead of mScreenCoordinates from the direction of mOriginCoordinates
+        if ( is.null(mViewBeginsFromCoordinates) ) {
+
+            nDivisionPlaneCoefficients = fGetPlaneAt(
+                mOriginCoordinates,
+                mZAxisVector,
+                mScreenCoordinates - mOriginCoordinates
+                # nScreenPlaneCoefficients
+            )
+
+        } else {
+
+            nDivisionPlaneCoefficients = fGetPlaneAt(
+                mViewBeginsFromCoordinates,
+                mZAxisVector,
+                mScreenCoordinates - mViewBeginsFromCoordinates
+                # nScreenPlaneCoefficients
+            )
+
+        }
+
+        bOriginDestinationInPositiveDirection = sum(nDivisionPlaneCoefficients * c(mOriginCoordinates, 1)) < 0
+
+    }
+
+
+
+    # dropping repeat points
     if ( T ) {
 
         viInputPoints = seq(nrow(mCoordinates))
@@ -43,7 +92,20 @@ fGetTransformedCoordinates = function (
         # removing repeat points
         if ( nrow(mCoordinates) > 1 & iTreatAs %in% c(2,3) ) {
 
-            viPointsToKeep = c(T, !rowSums(matrix(apply(mCoordinates, 2, diff), ncol = 3) ^ 2) == 0)
+            viPointsToKeep = c(
+                T, 
+                !rowSums(
+                    matrix(
+                        apply(
+                            mCoordinates, 
+                            2, 
+                            diff
+                        ), 
+                        ncol = 3
+                    ) ^ 2
+                ) == 0
+            )
+
             viInputPoints = viInputPoints[viPointsToKeep]
             mCoordinates = mCoordinates[viPointsToKeep,]
 
@@ -62,100 +124,23 @@ fGetTransformedCoordinates = function (
 
         }
 
-        # mScreenCoordinates = ( ( mOriginCoordinates - mScreenCoordinates) * 0.9999 ) + mScreenCoordinates
-        # mScreenCoordinates = mScreenCoordinates
-
-        # mZAxisVectorOnScreen = c(mScreenCoordinates[,1:2], mScreenCoordinates[,3] + 1)
-        # mZAxisVectorOnScreen = mScreenCoordinates[] + cbind(0,0,1)
-        mZAxisVectorOnScreen = mScreenCoordinates + ( mZAxisVector / ( sum(mZAxisVector^2) ^ 0.5 ) )
-
-        # this is the plane on which to project the data
-        # normal vector = (a,b,c)
-        # a(x - x1) + b(y - y1) + c(z - z1) = 0
-        nScreenPlaneCoefficients = c(
-            mScreenCoordinates[, 1] - mOriginCoordinates[, 1],
-            mScreenCoordinates[, 2] - mOriginCoordinates[, 2],
-            mScreenCoordinates[, 3] - mOriginCoordinates[, 3],
-            0
-            + ( ( mScreenCoordinates[, 1] - mOriginCoordinates[, 1] ) * mScreenCoordinates[, 1] )
-            + ( ( mScreenCoordinates[, 2] - mOriginCoordinates[, 2] ) * mScreenCoordinates[, 2]  )
-            + ( ( mScreenCoordinates[, 3] - mOriginCoordinates[, 3] ) * mScreenCoordinates[, 3]  )
-        )
+    }
 
 
 
-        # We can't let points all the way till on the screen plane be visualised because
-        # the coordinates for them will be ~inf. So we'll only include points which
-        # are at least a little ahead of mScreenCoordinates from the direction of mOriginCoordinates
-
-        if ( is.null(mViewBeginsFromCoordinates) ) {
-
-            # nDivisionPlaneCoefficients = nScreenPlaneCoefficients, right? Why isn't that working?
-            mAnotherDivisionPlaneAxisVector = fCrossProduct(
-                ( mZAxisVector / ( sum(mZAxisVector^2) ^ 0.5 ) ),
-                mScreenCoordinates - mOriginCoordinates
-            )
-
-            # if the above two vectors are parallel, i.e. viewing direction is along z axis
-            if ( sum(mAnotherDivisionPlaneAxisVector) == 0 ) {
-
-                nDivisionPlaneCoefficients = c(
-                    nScreenPlaneCoefficients[1:3],
-                    nScreenPlaneCoefficients[4] - cbind(mOriginCoordinates, 1) %*% nScreenPlaneCoefficients
-                )
-
-            } else {
-
-                mAnotherDivisionPlaneAxisVector = ( mAnotherDivisionPlaneAxisVector / sum(mAnotherDivisionPlaneAxisVector ^ 2 ) ^ 0.5 )
-                nDivisionPlaneCoefficients = fCrossProduct(
-                    ( mZAxisVector / ( sum(mZAxisVector^2) ^ 0.5 ) ), 
-                    mAnotherDivisionPlaneAxisVector
-                )
-                nDivisionPlaneCoefficients = c(
-                    nDivisionPlaneCoefficients,
-                    -sum(nDivisionPlaneCoefficients * mOriginCoordinates)
-                )
-            }
-
-            # ... i.e on the side of the plane as the screen coordinate
-            bOriginDestinationInPositiveDirection = sum(nDivisionPlaneCoefficients * c(mScreenCoordinates, 1)) >= 0
 
 
-        } else {
 
-            # nDivisionPlaneCoefficients = nScreenPlaneCoefficients, right? Why isn't that working?
-            mAnotherDivisionPlaneAxisVector = fCrossProduct(
-                ( mZAxisVector / ( sum(mZAxisVector^2) ^ 0.5 ) ),
-                mOriginCoordinates - mViewBeginsFromCoordinates
-            )
 
-            # if the above two vectors are parallel, i.e. viewing direction is along z axis
-            if ( sum(mAnotherDivisionPlaneAxisVector) == 0 ) {
 
-                nDivisionPlaneCoefficients = c(
-                    nScreenPlaneCoefficients[1:3],
-                    nScreenPlaneCoefficients[4] - cbind(mViewBeginsFromCoordinates, 1) %*% nScreenPlaneCoefficients
-                )
 
-            } else {
 
-                mAnotherDivisionPlaneAxisVector = ( mAnotherDivisionPlaneAxisVector / sum(mAnotherDivisionPlaneAxisVector ^ 2 ) ^ 0.5 )
-                nDivisionPlaneCoefficients = fCrossProduct(
-                    ( mZAxisVector / ( sum(mZAxisVector^2) ^ 0.5 ) ), 
-                    mAnotherDivisionPlaneAxisVector
-                )
-                nDivisionPlaneCoefficients = c(
-                    nDivisionPlaneCoefficients,
-                    -sum(nDivisionPlaneCoefficients * mViewBeginsFromCoordinates)
-                )
-            }
 
-            # ... i.e on the other side of the plane as the origin
-            bOriginDestinationInPositiveDirection = sum(nDivisionPlaneCoefficients * c(mOriginCoordinates, 1)) < 0
 
-        }
 
-        # handling points behind the screen
+    # handling points behind the screen
+    if ( T ) {
+
         # retaining at most two points behind the screen for each stretch of points
         # behind the screen so that closed polygons from the points ahead of the screen
         # can be computed
@@ -184,26 +169,45 @@ fGetTransformedCoordinates = function (
 
     } else {
 
-        viRelativeScreenPositionChunks = cumsum(c(1,abs(diff(vbCoordinatesToTransform))))
+        # drawing continuous links between consecutive sets of points that 
+        # are in front or behind a screen
+        viFrontOfScreenStretches = cumsum(
+            c(
+                1,
+                abs(
+                    diff(vbCoordinatesToTransform)
+                )
+            )
+        )
 
+        # dropping the n-2 points in between and keeping the first and last
+        # point of every stretch that's behind the screen
         viPointsToKeep = setdiff(
             seq(nrow(mCoordinates)),
-            unlist(c(lapply(
-                unique(viRelativeScreenPositionChunks[vbCoordinatesToTransform == F]),
-                function( iChunk ) {
+            unlist(
+                c(
+                    lapply(
+                        unique(
+                            viFrontOfScreenStretches[
+                                vbCoordinatesToTransform == F
+                            ]
+                        ),
+                        function( iChunk ) {
 
-                    viIndices = which(viRelativeScreenPositionChunks == iChunk)
+                            viIndices = which(viFrontOfScreenStretches == iChunk)
 
-                    if ( length(viIndices) > 2 ) {
-                        viIndicesToRemove = setdiff(viIndices, range(viIndices) )
-                    } else {
-                        viIndicesToRemove = -1
-                    }
+                            if ( length(viIndices) > 2 ) {
+                                viIndicesToRemove = setdiff(viIndices, range(viIndices) )
+                            } else {
+                                viIndicesToRemove = -1
+                            }
 
-                    viIndicesToRemove
+                            viIndicesToRemove
 
-                }
-            )))
+                        }
+                    )
+                )
+            )
         )
 
         mCoordinates = mCoordinates[
@@ -213,6 +217,16 @@ fGetTransformedCoordinates = function (
         viInputPoints = viInputPoints[viPointsToKeep]
 
         mCoordinates = matrix(mCoordinates, ncol = 3)
+
+
+
+
+
+
+
+
+
+
 
         # if the start and the end stretches of the coordinates are both behind the polygon
         # then compress them into a single stretch and cycle the polygon coordinates
@@ -225,11 +239,11 @@ fGetTransformedCoordinates = function (
             )
         )
 
-        viRelativeScreenPositionChunks = cumsum(c(1,abs(diff(vbCoordinatesToTransform))))
+        viFrontOfScreenStretches = cumsum(c(1,abs(diff(vbCoordinatesToTransform))))
 
-        if ( all(!vbCoordinatesToTransform[viRelativeScreenPositionChunks %in% range(viRelativeScreenPositionChunks)]) ) {
+        if ( all(!vbCoordinatesToTransform[viFrontOfScreenStretches %in% range(viFrontOfScreenStretches)]) ) {
 
-            viPointsToKeep = max(which(viRelativeScreenPositionChunks == 1)):min(which(viRelativeScreenPositionChunks == max(viRelativeScreenPositionChunks)))
+            viPointsToKeep = max(which(viFrontOfScreenStretches == 1)):min(which(viFrontOfScreenStretches == max(viFrontOfScreenStretches)))
 
             if ( iTreatAs == 3 ) {
 
@@ -300,7 +314,7 @@ fGetTransformedCoordinates = function (
                 break
             }
 
-            viRelativeScreenPositionChunks = cumsum(
+            viFrontOfScreenStretches = cumsum(
                 c(
                     1,
                     abs(
@@ -314,9 +328,9 @@ fGetTransformedCoordinates = function (
                     )
                 )
             )
-            viCoordinatesToTransform = table(viRelativeScreenPositionChunks[!vbCoordinatesToTransform])
+            viCoordinatesToTransform = table(viFrontOfScreenStretches[!vbCoordinatesToTransform])
             viCoordinatesToTransform = which(
-                viRelativeScreenPositionChunks == as.integer(names(viCoordinatesToTransform)[1])
+                viFrontOfScreenStretches == as.integer(names(viCoordinatesToTransform)[1])
             )
 
             # in case it's just one point
@@ -424,7 +438,7 @@ fGetTransformedCoordinates = function (
         # can parameterise this also maybe
         mCoordinates = rbind(
             mCoordinates,
-            mZAxisVectorOnScreen
+            mYAxisVectorOnScreen
         )
 
         mLHSBase = matrix(nScreenPlaneCoefficients[1:3], ncol = 3)
