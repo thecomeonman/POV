@@ -3,6 +3,7 @@
 export(fCrossProduct)
 export(fGet2DRoundedBoundaryAroundPath)
 export(fGet3DTrajectoryBetweenTwoPoints)
+export(fGetInterpolatedPointsAtDivisionPlane)
 export(fGetPlaneAt)
 export(fGetTransformedCoordinates)
 export(fGetTransformedCoordinates2)

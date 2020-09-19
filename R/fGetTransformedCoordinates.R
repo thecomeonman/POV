@@ -130,6 +130,7 @@ fGetTransformedCoordinates = function (
     }
 
 
+
     if ( T ) {
         
         # print('m0')
@@ -151,7 +152,6 @@ fGetTransformedCoordinates = function (
 
         }
 
-
         mCoordinates = mCoordinates[viPointsToKeep,]
         viInputPoints = viInputPoints[viPointsToKeep]
         mCoordinates = matrix(mCoordinates, ncol = 3)
@@ -163,134 +163,23 @@ fGetTransformedCoordinates = function (
         # such that the connecting point is a point on the screen
         # if there are two consecutive behind points then adding a place holder for an inbetween point between the two behind points
         # so that the polygon closes elegantly
-        repeat {
+        
+        lReturn = fGetInterpolatedPointsAtDivisionPlane(
+            mCoordinates = mCoordinates,
+            nDivisionPlaneCoefficients = nDivisionPlaneCoefficients,
+            bOriginDestinationInPositiveDirection = bOriginDestinationInPositiveDirection,
+            iTreatAs = iTreatAs,
+            viInputPoints = viInputPoints
+        )
+        
+        viInputPoints = lReturn$viInputPoints
+        mCoordinates = lReturn$mCoordinates
+        rm(lReturn)
 
-            vbCoordinatesToTransform = c(
-                bOriginDestinationInPositiveDirection == (
-                    cbind(mCoordinates, 1) %*% nDivisionPlaneCoefficients >= 0
-                )
-            )
-
-            if ( all(vbCoordinatesToTransform[!is.na(vbCoordinatesToTransform)]) ) {
-                break
-            }
-
-            viFrontOfScreenStretches = cumsum(
-                c(
-                    1,
-                    abs(
-                        diff(
-                            # sapply(
-                            #     vbCoordinatesToTransform,
-                            #     function(x) ifelse(is.na(x),-1,x)
-                            # )
-                            na.locf(vbCoordinatesToTransform)
-                        ) != 0
-                    )
-                )
-            )
-            viCoordinatesToTransform = table(viFrontOfScreenStretches[!vbCoordinatesToTransform])
-            viCoordinatesToTransform = which(
-                viFrontOfScreenStretches == as.integer(names(viCoordinatesToTransform)[1])
-            )
-
-            # in case it's just one point
-            viCoordinatesToTransform = range(viCoordinatesToTransform)
-
-            if (
-                viCoordinatesToTransform[2] == 1 &
-                iTreatAs != 3
-            ) {
-
-                iNextPoint = viCoordinatesToTransform[2] + 1
-
-                vnDistancesFromPlane = cbind(mCoordinates[c(viCoordinatesToTransform[2], iNextPoint),], 1) %*% nDivisionPlaneCoefficients
-
-                mReplacementPoints = mCoordinates[viCoordinatesToTransform[2], ] - ( diff(mCoordinates[c(iNextPoint, viCoordinatesToTransform[2]),]) * ( 0.000000000001 + ( abs(vnDistancesFromPlane[1]) / ( abs(vnDistancesFromPlane[1]) + abs(vnDistancesFromPlane[2]) ) ) ) )
-
-                viReplacementPointSequence = viInputPoints[c(viCoordinatesToTransform[2])]
-
-            } else if (
-                viCoordinatesToTransform[1] == nrow(mCoordinates) &
-                iTreatAs != 3
-            ) {
-
-                iPrevPoint = viCoordinatesToTransform[1] - 1
-
-                vnDistancesFromPlane = cbind(
-                    mCoordinates[c(iPrevPoint, viCoordinatesToTransform[1]),],
-                1) %*% nDivisionPlaneCoefficients
-
-                mReplacementPoints = mCoordinates[viCoordinatesToTransform[1], ] - ( diff(mCoordinates[c(iPrevPoint, viCoordinatesToTransform[1]),]) * ( 0.000000000001 +  ( abs(vnDistancesFromPlane[2]) / ( abs(vnDistancesFromPlane[1]) + abs(vnDistancesFromPlane[2]) ) ) ) )
-
-                viReplacementPointSequence = viInputPoints[c(viCoordinatesToTransform[1])]
-
-            } else {
-
-                iPrevPoint = viCoordinatesToTransform[1] - 1
-                iNextPoint = viCoordinatesToTransform[2] + 1
-
-                iPrevPoint[iPrevPoint == 0] = nrow(mCoordinates)
-                iNextPoint[iNextPoint == nrow(mCoordinates) + 1] = 1
-
-                vnDistancesFromPlane = cbind(mCoordinates[c(iPrevPoint, viCoordinatesToTransform, iNextPoint),], 1) %*% nDivisionPlaneCoefficients
-
-                mReplacementPoints = rbind(
-                    mCoordinates[viCoordinatesToTransform[1], ] - ( diff(mCoordinates[c(iPrevPoint, viCoordinatesToTransform[1]),]) * ( 0.000000000001 + ( abs(vnDistancesFromPlane[2]) / ( abs(vnDistancesFromPlane[1]) + abs(vnDistancesFromPlane[2]) ) ) ) ),
-                    cbind(NA,NA,NA),
-                    mCoordinates[viCoordinatesToTransform[2], ] - ( diff(mCoordinates[c(iNextPoint, viCoordinatesToTransform[2]),]) * ( 0.000000000001 + ( abs(vnDistancesFromPlane[3]) / ( abs(vnDistancesFromPlane[3]) + abs(vnDistancesFromPlane[4]) ) ) ) )
-                )
-
-                viReplacementPointSequence = c(
-                    viInputPoints[viCoordinatesToTransform[1]],
-                    NA,
-                    viInputPoints[viCoordinatesToTransform[2]]
-                )
-
-            }
-
-            if ( viCoordinatesToTransform[1] == 1 ) {
-
-                viInputPoints = c(
-                    viReplacementPointSequence,
-                    viInputPoints[-viCoordinatesToTransform]
-                )
-                mCoordinates = rbind(
-                    mReplacementPoints,
-                    mCoordinates[-viCoordinatesToTransform, ]
-                )
-
-
-            } else if ( viCoordinatesToTransform[2] == length(vbCoordinatesToTransform) ) {
-
-                viInputPoints = c(
-                    viInputPoints[-viCoordinatesToTransform],
-                    viReplacementPointSequence
-                )
-                mCoordinates = rbind(
-                    mCoordinates[-viCoordinatesToTransform, ],
-                    mReplacementPoints
-                )
-
-            } else {
-
-                viInputPoints = c(
-                    viInputPoints[1:(viCoordinatesToTransform[1]-1)],
-                    viReplacementPointSequence,
-                    viInputPoints[(viCoordinatesToTransform[2]+1):nrow(mCoordinates)]
-                )
-
-                mCoordinates = rbind(
-                    mCoordinates[1:(viCoordinatesToTransform[1]-1), ],
-                    mReplacementPoints,
-                    mCoordinates[(viCoordinatesToTransform[2]+1):nrow(mCoordinates),]
-                )
-
-            }
-
-        }
 
     }
+
+
 
     # pojrection on screen for points in front
     if ( T ) {
@@ -308,35 +197,36 @@ fGetTransformedCoordinates = function (
 
         for ( iCoordinatesRow in seq(nrow(mCoordinates)) ) {
 
-            if ( iCoordinatesRow == 1 + length(vbCoordinatesToTransform) ) {
-                bEvaluate = T
-            } else {
-                bEvaluate = vbCoordinatesToTransform[iCoordinatesRow]
-            }
-
-            bEvaluate = ifelse(is.na(bEvaluate), F, bEvaluate)
+            # shouldn't try to interpolate the NA filler points
+            # between two interpolated points
+            bEvaluate = ifelse(
+                is.na(mCoordinates[iCoordinatesRow, 1]), 
+                F, 
+                T
+            )
 
             if ( bEvaluate ) {
 
-                nOtherPoint = mCoordinates[iCoordinatesRow,]
+                vnPointToProject = mCoordinates[iCoordinatesRow,]
 
-                if ( all(!is.na(nOtherPoint))) {
-                    if ( all(nOtherPoint == mScreenCoordinates ) ) {
+                if ( all(!is.na(vnPointToProject))) {
+
+                    if ( all(vnPointToProject == mScreenCoordinates ) ) {
 
                         mSolution = mScreenCoordinates
 
-                    } else if ( all(nOtherPoint == mOriginCoordinates ) ) {
+                    } else if ( all(vnPointToProject == mOriginCoordinates ) ) {
 
                         mSolution = mOriginCoordinates
 
                     } else if (
-                        sum(nScreenPlaneCoefficients[1:3] * nOtherPoint) == nScreenPlaneCoefficients[4]
+                        sum(nScreenPlaneCoefficients[1:3] * vnPointToProject) == nScreenPlaneCoefficients[4]
                     ) {
 
-                        mSolution = nOtherPoint
+                        mSolution = vnPointToProject
 
                     } else if (
-                        all ( ( nOtherPoint - mOriginCoordinates ) * ( mScreenCoordinates - mOriginCoordinates ) == 0 )
+                        all ( ( vnPointToProject - mOriginCoordinates ) * ( mScreenCoordinates - mOriginCoordinates ) == 0 )
                     ) {
 
                         mSolution = cbind(NA, NA, NA)
@@ -346,7 +236,7 @@ fGetTransformedCoordinates = function (
                         mLHS = mLHSBase
                         mRHS = mRHSBase
 
-                        viCoefficientsToIncorporate = which(nOtherPoint != mOriginCoordinates)
+                        viCoefficientsToIncorporate = which(vnPointToProject != mOriginCoordinates)
 
                         for ( iCoeff in setdiff(1:3, viCoefficientsToIncorporate) ) {
 
@@ -382,14 +272,14 @@ fGetTransformedCoordinates = function (
                                 # a = x1 - x0
                                 # b = y1 - y0
                                 # bx - ay = bx0 - ay0
-                                b = ( mOriginCoordinates[,iIndex2] - nOtherPoint[iIndex2] )
-                                a = ( mOriginCoordinates[,iIndex1] - nOtherPoint[iIndex1] )
+                                b = ( mOriginCoordinates[,iIndex2] - vnPointToProject[iIndex2] )
+                                a = ( mOriginCoordinates[,iIndex1] - vnPointToProject[iIndex1] )
                                 mLHSIncrement[iIndex1] = + b
                                 mLHSIncrement[iIndex2] = - a
 
                                 mRHSIncrement = (
-                                    ( + b * ( nOtherPoint[iIndex1] ) ) +
-                                    ( - a * ( nOtherPoint[iIndex2] ) )
+                                    ( + b * ( vnPointToProject[iIndex1] ) ) +
+                                    ( - a * ( vnPointToProject[iIndex2] ) )
                                 )
 
                                 mLHS = rbind(
