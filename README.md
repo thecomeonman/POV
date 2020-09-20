@@ -10,6 +10,8 @@ Data
 
 The data in this example is just a cube with eight corners specified.
 
+x y z 1 2 2 2 2 2 2 3 3 2 3 2 4 2 3 3 5 3 2 2 6 3 2 3 7 3 3 2 8 3 3 3
+
 Shadows on the three planes
 ---------------------------
 
@@ -26,6 +28,12 @@ We will do this thrice, once for each plane - the XY, the YZ, and the XZ
 plane.
 
 The projection on the XY plane is:
+
+      [,1]     [,2] [,3]
+
+y 1.998997 1.998997 0 y 1.998494 1.998494 0 y 1.998997 3.001003 0 y
+1.998494 3.001506 0 y 3.001003 1.998997 0 y 3.001506 1.998494 0 y
+3.001003 3.001003 0 y 3.001506 3.001506 0
 
 You can see the z coordinate being zero, and the x and y coordinates
 being four points repeated twice each with a minor change in the
@@ -94,7 +102,7 @@ different coordinates. You can get the individual plots from the
 functionality in this library but stitching them together will need you
 to have another program, like image magick.
 
-![](./example.gif)
+![](./README_files/figure-markdown_strict/example.gif)
 
 Other examples
 --------------
@@ -117,6 +125,5 @@ pitches.<a href="https://twitter.com/hashtag/TidyTuesday?src=hash&amp;ref_src=tw
 <a href="https://twitter.com/thecomeonman/status/1288103535066746882?ref_src=twsrc%5Etfw">July
 28, 2020</a>
 </blockquote>
-<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 These are just more complicated datasets but work pretty much the same
 way as the example above.
