@@ -27,7 +27,7 @@
 #' inputs then you'll get a NULL.
 #' @import zoo
 #' @export
-fGetTransformedCoordinates2 = function (
+fGetTransformedCoordinatesDiscard = function (
     mCoordinates,
     mOriginCoordinates,
     mScreenCoordinates,

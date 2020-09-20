@@ -1,4 +1,6 @@
-#' Calculate a trajectory between two points
+#' Calculate a trajectory between two points based on the input parameters
+#' @param timesteps decides the resolution with which to give the output. 
+#' Higher value means lower resolution.
 #' @export
 fGet3DTrajectoryBetweenTwoPoints = function(
    x = 0,

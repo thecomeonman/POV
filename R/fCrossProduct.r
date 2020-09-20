@@ -1,3 +1,6 @@
+#' Cross product between two vectors
+#' @param v1, a matrix [x,y,z]
+#' @param v2, a matrix [x,y,z]
 #' @export
 fCrossProduct = function(v1, v2) {
 

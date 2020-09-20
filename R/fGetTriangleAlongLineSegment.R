@@ -1,3 +1,5 @@
+#' Mainly to draw arrowheads
+#' @param baselength the bigger it is, the wider the base of the arrow
 #' @export
 fGetTriangleAlongLineSegment = function(
    x = 75,

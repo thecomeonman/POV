@@ -1,3 +1,5 @@
+#' Getting plane coefficients from two vectors and a point that lie on the plane
+#' @return [a,b,c,d] such that ax + by + cz = d
 #' @export
 fGetPlaneAt = function(
     mOriginCoordinates,
@@ -6,7 +8,6 @@ fGetPlaneAt = function(
     # nScreenPlaneCoefficients
 ) {
 
-    # nDivisionPlaneCoefficients = nScreenPlaneCoefficients, right? Why isn't that working?
     mAnotherDivisionPlaneAxisVector = fCrossProduct(
         ( mVector1 / ( sum(mVector1^2) ^ 0.5 ) ),
         mVector2
@@ -15,7 +16,7 @@ fGetPlaneAt = function(
     # if the above two vectors are parallel, i.e. viewing direction is along z axis
     # for now assuming this case can never happen
     if ( sum(mAnotherDivisionPlaneAxisVector) == 0 ) {
-        print(mAnotherDivisionPlaneAxisVector)
+        # print(mAnotherDivisionPlaneAxisVector)
     }
 
     #     nDivisionPlaneCoefficients = c(

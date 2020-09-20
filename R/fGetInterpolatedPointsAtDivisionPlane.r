@@ -1,3 +1,15 @@
+#' Handles the logic needed by the mViewBeginsFromCoordinates parm in
+#' fGetTransformedCoordinates to get the points at the dividing plane
+#' @param mCoordinates matrix with three columns [x,y,z] with >= one rows
+#' @param nDivisionPlaneCoefficients matrix with four columns [a,b,c,d] such that
+#' the equation of the plan is ax + by + cz = d. This is the plane across which
+#' the data could be spread across
+#' @param bOriginDestinationInPositiveDirection boolean. Dictates which side
+#' of the plane should be treated as behind and which front
+#' @param iTreatAs Explained in mViewBeginsFromCoordinates in fGetTransformedCoordinates.
+#' @param viInputPoints if you're tracking the order of the points already then
+#' you can pass that vector and it will be updated. Can be left null if you don't
+#' care for tracking the order of the points.
 #' @export
 fGetInterpolatedPointsAtDivisionPlane = function(
     mCoordinates,

@@ -1,4 +1,17 @@
-
+#' Handles the logic needed by the mViewBeginsFromCoordinates parm in
+#' fGetTransformedCoordinates. 
+#' 
+#' Removes unnecessary points behind the plane and keeps only those behind points 
+#' which are adjacent to a point in front for interpolation by
+#' fGetInterpolatedPointsAtDivisionPlane
+#' @param mCoordinates matrix with three columns [x,y,z] with >= one rows
+#' @param nDivisionPlaneCoefficients matrix with four columns [a,b,c,d] such that
+#' the equation of the plan is ax + by + cz = d. This is the plane across which
+#' the data could be spread across
+#' @param bOriginDestinationInPositiveDirection boolean. Dictates which side
+#' of the plane should be treated as behind and which front
+#' @param iTreatAs Explained in mViewBeginsFromCoordinates in fGetTransformedCoordinates.
+#' @export
 #' @export
 fRemovePointsBehindDividingPlane = function(
     mCoordinates,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/fGet3DTrajectoryBetweenTwoPoints.R
 \name{fGet3DTrajectoryBetweenTwoPoints}
 \alias{fGet3DTrajectoryBetweenTwoPoints}
-\title{Calculate a trajectory between two points}
+\title{Calculate a trajectory between two points based on the input parameters}
 \usage{
 fGet3DTrajectoryBetweenTwoPoints(
   x = 0,
@@ -18,6 +18,10 @@ fGet3DTrajectoryBetweenTwoPoints(
   timesteps = 100
 )
 }
+\arguments{
+\item{timesteps}{decides the resolution with which to give the output. 
+Higher value means lower resolution.}
+}
 \description{
-Calculate a trajectory between two points
+Calculate a trajectory between two points based on the input parameters
 }

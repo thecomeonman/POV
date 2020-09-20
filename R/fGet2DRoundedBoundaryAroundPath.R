@@ -1,3 +1,5 @@
+#' Very suboptimal code to draw a polygon around a set of x,y values - like
+#' a bubble around a path
 #' @export
 fGet2DRoundedBoundaryAroundPath = function(
    vx,
