@@ -20,7 +20,7 @@ fGetTransformedCoordinates(
 of where the scene is being viewed from}
 
 \item{mScreenCoordinates}{three column, one row matrix specifying coordinates
-of the screen on which the scene is being projected on. The function 
+of the screen on which the scene is being projected on. The function
 calculates a plane which is perpendicular to the vector from mOriginCoordinates
 to mScreenCoordinates which contains mScreenCoordinates. This plane is the
 screen on which things are projected finally.}

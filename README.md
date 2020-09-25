@@ -10,7 +10,57 @@ Data
 
 The data in this example is just a cube with eight corners specified.
 
-x y z 1 2 2 2 2 2 2 3 3 2 3 2 4 2 3 3 5 3 2 2 6 3 2 3 7 3 3 2 8 3 3 3
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;">x</th>
+<th style="text-align: right;">y</th>
+<th style="text-align: right;">z</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+</tr>
+</tbody>
+</table>
 
 Shadows on the three planes
 ---------------------------
@@ -29,11 +79,50 @@ plane.
 
 The projection on the XY plane is:
 
-      [,1]     [,2] [,3]
-
-y 1.998997 1.998997 0 y 1.998494 1.998494 0 y 1.998997 3.001003 0 y
-1.998494 3.001506 0 y 3.001003 1.998997 0 y 3.001506 1.998494 0 y
-3.001003 3.001003 0 y 3.001506 3.001506 0
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1.998997</td>
+<td style="text-align: right;">1.998997</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1.998494</td>
+<td style="text-align: right;">1.998494</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1.998997</td>
+<td style="text-align: right;">3.001003</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1.998494</td>
+<td style="text-align: right;">3.001506</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3.001003</td>
+<td style="text-align: right;">1.998997</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3.001506</td>
+<td style="text-align: right;">1.998494</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3.001003</td>
+<td style="text-align: right;">3.001003</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3.001506</td>
+<td style="text-align: right;">3.001506</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
 
 You can see the z coordinate being zero, and the x and y coordinates
 being four points repeated twice each with a minor change in the
@@ -125,5 +214,8 @@ pitches.<a href="https://twitter.com/hashtag/TidyTuesday?src=hash&amp;ref_src=tw
 <a href="https://twitter.com/thecomeonman/status/1288103535066746882?ref_src=twsrc%5Etfw">July
 28, 2020</a>
 </blockquote>
-These are just more complicated datasets but work pretty much the same
-way as the example above.
+<p>
+</p>
+These are just more complicated datasets but at the heart of it is the
+same approach as described above. The library has some helper functions
+to draw 3D paths, etc.

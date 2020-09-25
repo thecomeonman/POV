@@ -62,7 +62,7 @@ opts_chunk$set(
 The data in this example is just a cube with eight corners specified.
 
 ```{r Data, cache=FALSE, echo=FALSE, warning=FALSE, message=FALSE, fig.width = 15, fig.height = 8, results = 'asis'}
-print(df)
+kable(df, format = 'markdown')
 ```
 
 ## Shadows on the three planes
@@ -123,8 +123,7 @@ mdfprojectionxy = fGetProjectionsOnPlane(
 
 ```{r XYShadowPreview, cache=FALSE, echo=FALSE, warning=FALSE, message=FALSE, fig.width = 15, fig.height = 8, results = 'asis'}
 
-print(mdfprojectionxy)
-
+kable(mdfprojectionxy, format = 'markdown')
 ```
 
 You can see the z coordinate being zero, and the x and y coordinates being 
@@ -840,9 +839,8 @@ this library in the football context -
 
 ```{r Tweet, cache=FALSE, echo=FALSE, warning=FALSE, message=FALSE, fig.width = 15, fig.height = 8, results = 'asis'}
 
-cat('<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Sneak peek into a slow moving side project - 3D views and slices of football pitches.<a href="https://twitter.com/hashtag/TidyTuesday?src=hash&amp;ref_src=twsrc%5Etfw">#TidyTuesday</a> <a href="https://twitter.com/lhashtag/ggplot2?src=hash&amp;ref_src=twsrc%5Etfw">#ggplot2</a> <a href="https://twitter.com/hashtag/RStats?src=hash&amp;ref_src=twsrc%5Etfw">#RStats</a> <a href="https://t.co/BSEba2zs9T">pic.twitter.com/BSEba2zs9T</a></p>&mdash; The Come On Man (@thecomeonman) <a href="https://twitter.com/thecomeonman/status/1288103535066746882?ref_src=twsrc%5Etfw">July 28, 2020</a></blockquote>')
+cat('<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Sneak peek into a slow moving side project - 3D views and slices of football pitches.<a href="https://twitter.com/hashtag/TidyTuesday?src=hash&amp;ref_src=twsrc%5Etfw">#TidyTuesday</a> <a href="https://twitter.com/lhashtag/ggplot2?src=hash&amp;ref_src=twsrc%5Etfw">#ggplot2</a> <a href="https://twitter.com/hashtag/RStats?src=hash&amp;ref_src=twsrc%5Etfw">#RStats</a> <a href="https://t.co/BSEba2zs9T">pic.twitter.com/BSEba2zs9T</a></p>&mdash; The Come On Man (@thecomeonman) <a href="https://twitter.com/thecomeonman/status/1288103535066746882?ref_src=twsrc%5Etfw">July 28, 2020</a></blockquote><p></p>')
 
 ```
 
-These are just more complicated datasets but work pretty much the same way
-as the example above.
+These are just more complicated datasets but at the heart of it is the same approach as described above. The library has some helper functions to draw 3D paths, etc.

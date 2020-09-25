@@ -1,7 +1,7 @@
 #' Handles the logic needed by the mViewBeginsFromCoordinates parm in
-#' fGetTransformedCoordinates. 
-#' 
-#' Removes unnecessary points behind the plane and keeps only those behind points 
+#' fGetTransformedCoordinates.
+#'
+#' Removes unnecessary points behind the plane and keeps only those behind points
 #' which are adjacent to a point in front for interpolation by
 #' fGetInterpolatedPointsAtDivisionPlane
 #' @param mCoordinates matrix with three columns [x,y,z] with >= one rows
@@ -20,8 +20,7 @@ fRemovePointsBehindDividingPlane = function(
     iTreatAs
 ) {
 
-    # print('m1')
-    # print(head(mCoordinates))
+    # print(bOriginDestinationInPositiveDirection)
 
 
     # retaining at most two points behind the screen for each stretch of points
@@ -34,7 +33,7 @@ fRemovePointsBehindDividingPlane = function(
     )
 
     # print('m3')
-    # print(head(mCoordinates))
+    # print(nDivisionPlaneCoefficients)
 
     # return empty dataset if all points are behind screen
     if ( all(!vbCoordinatesToTransform) ) {
@@ -54,7 +53,7 @@ fRemovePointsBehindDividingPlane = function(
 
         } else {
 
-            # drawing continuous links between consecutive sets of points that 
+            # drawing continuous links between consecutive sets of points that
             # are in front or behind a screen
             viFrontOfScreenStretches = cumsum(
                 c(
@@ -66,7 +65,7 @@ fRemovePointsBehindDividingPlane = function(
             )
 
             # dropping the n-2 points in between and keeping the first and last
-            # point of every stretch that's behind the screen. If the first or 
+            # point of every stretch that's behind the screen. If the first or
             # the last stretch are behind then dropping n -1 points. Basically
             # keeping only points adjacent to a point in front of the screen becase
             # they are needed for the interpolation and reomving all other points
@@ -121,7 +120,7 @@ fRemovePointsBehindDividingPlane = function(
             )
 
             # print(seq(nrow(mCoordinates)))
-            
+
             viPointsToKeep = sort(viPointsToKeep)
 
 
@@ -142,7 +141,7 @@ fRemovePointsBehindDividingPlane = function(
 
             }
 
-            
+
         }
 
     }

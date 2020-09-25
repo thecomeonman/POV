@@ -4,7 +4,7 @@
 #' @param mOriginCoordinates three column, one row matrix specifying coordinates
 #' of where the scene is being viewed from
 #' @param mScreenCoordinates three column, one row matrix specifying coordinates
-#' of the screen on which the scene is being projected on. The function 
+#' of the screen on which the scene is being projected on. The function
 #' calculates a plane which is perpendicular to the vector from mOriginCoordinates
 #' to mScreenCoordinates which contains mScreenCoordinates. This plane is the
 #' screen on which things are projected finally.
@@ -53,8 +53,8 @@ fGetTransformedCoordinates = function (
         # the screen coordinates being one of the points on this plane
         nScreenPlaneCoefficients = c(
             mScreenCoordinates - mOriginCoordinates,
-            sum( 
-                ( mScreenCoordinates - mOriginCoordinates ) * mScreenCoordinates 
+            sum(
+                ( mScreenCoordinates - mOriginCoordinates ) * mScreenCoordinates
             )
         )
 
@@ -67,7 +67,7 @@ fGetTransformedCoordinates = function (
             mScreenCoordinates - mOriginCoordinates,
             mZAxisVector
         )
-        
+
         if ( is.null(mViewBeginsFromCoordinates) ) {
 
 
@@ -89,7 +89,7 @@ fGetTransformedCoordinates = function (
 
         }
 
-        bOriginDestinationInPositiveDirection = sum(nDivisionPlaneCoefficients * c(mOriginCoordinates, 1)) < 0
+        bOriginDestinationInPositiveDirection = sum(nDivisionPlaneCoefficients * c(mOriginCoordinates, 1)) < -0.00000000001
 
     }
 
@@ -103,14 +103,14 @@ fGetTransformedCoordinates = function (
         if ( nrow(mCoordinates) > 1 & iTreatAs %in% c(2,3) ) {
 
             viPointsToKeep = c(
-                T, 
+                T,
                 !rowSums(
                     matrix(
                         apply(
-                            mCoordinates, 
-                            2, 
+                            mCoordinates,
+                            2,
                             diff
-                        ), 
+                        ),
                         ncol = 3
                     ) ^ 2
                 ) == 0
@@ -140,7 +140,7 @@ fGetTransformedCoordinates = function (
     # adding points to handle cases where a path or a polygon is going across
     # the division plane
     if ( T ) {
-        
+
         # print('m0')
         # print(head(mCoordinates))
         # browser()
@@ -155,7 +155,7 @@ fGetTransformedCoordinates = function (
         # print(viPointsToKeep)
 
         if ( length(viPointsToKeep) == 0 ) {
-            
+
             return ( NULL )
 
         }
@@ -171,7 +171,7 @@ fGetTransformedCoordinates = function (
         # such that the connecting point is a point on the screen
         # if there are two consecutive behind points then adding a place holder for an inbetween point between the two behind points
         # so that the polygon closes elegantly
-        
+
         lReturn = fGetInterpolatedPointsAtDivisionPlane(
             mCoordinates = mCoordinates,
             nDivisionPlaneCoefficients = nDivisionPlaneCoefficients,
@@ -179,7 +179,7 @@ fGetTransformedCoordinates = function (
             iTreatAs = iTreatAs,
             viInputPoints = viInputPoints
         )
-        
+
         viInputPoints = lReturn$viInputPoints
         mCoordinates = lReturn$mCoordinates
         rm(lReturn)
@@ -193,7 +193,7 @@ fGetTransformedCoordinates = function (
 
         # adding a vertical vector for knowing which way points up
         # can parameterise this also maybe
-        
+
         mSolutions = fGetProjectionsOnPlane(
             mCoordinates,
             mOriginCoordinates,
@@ -221,9 +221,9 @@ fGetTransformedCoordinates = function (
 
         mXAxisVectorNew = fCrossProduct(mZAxisVectorNew, mYAxis - mScreenCoordinates)
 
-        mYAxisVectorNew = mYAxis / sum(mYAxis^2) ^ 0.5        
+        mYAxisVectorNew = mYAxis / sum(mYAxis^2) ^ 0.5
         mXAxisVectorNew = mXAxisVectorNew / sum(mXAxisVectorNew^2) ^ 0.5
-        
+
         mResult = fRelativeXYPositionOnPlane(
             mSolutions,
             mScreenCoordinates,
@@ -237,7 +237,7 @@ fGetTransformedCoordinates = function (
     # that lies just a little below the lowest point in the viz or just a little
     # aboe the highest point in the viz so it can be chopped off with a ylim
     # you won't have poitns spilling outsdie the x boundaries
-    if ( T ) {    
+    if ( T ) {
 
         viPointsToFillIn = which(is.na(mResult[, 1]))
 
@@ -271,7 +271,7 @@ fGetTransformedCoordinates = function (
         ) {
 
             mResult = cbind(
-                mResult[,c('x','y')], 
+                mResult[,c('x','y')],
                 group = 1
             )
 

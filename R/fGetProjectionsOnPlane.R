@@ -11,6 +11,8 @@ fGetProjectionsOnPlane = function(
     nScreenPlaneCoefficients
 ) {
 
+    # browser()
+
     mLHSBase = matrix(nScreenPlaneCoefficients[1:3], ncol = 3)
     mRHSBase = matrix(nScreenPlaneCoefficients[4], ncol = 1)
 
@@ -53,7 +55,7 @@ fGetProjectionsOnPlane = function(
                     mLHS = mLHSBase
                     mRHS = mRHSBase
 
-                    viCoefficientsToIncorporate = which(vnPointToProject != mOriginCoordinates)
+                    viCoefficientsToIncorporate = which(abs(vnPointToProject - mOriginCoordinates) > 0.0000000001)
 
                     for ( iCoeff in setdiff(1:3, viCoefficientsToIncorporate) ) {
 
@@ -145,6 +147,7 @@ fGetProjectionsOnPlane = function(
 
     }
 
+    rownames(mSolutions) = NULL
     return ( mSolutions )
 
 }

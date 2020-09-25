@@ -9,19 +9,30 @@ fGetTriangleAlongLineSegment = function(
    baselength = 2
 ) {
 
-   slope = (y - yend) / (x - xend)
+   if ( x != xend ) {
 
-   slopeperpendicular = -1/slope
+      slope = (y - yend) / (x - xend)
+
+      if ( slope == 0 ) {
+         slopeperpendicular = Inf
+      } else {
+         slopeperpendicular = -1/slope
+      }
+
+   } else {
+
+      slopeperpendicular = 0
+
+   }
 
    c = y - ( slopeperpendicular * x )
 
    rbind(
-      cbind((x + (baselength/2)), c + ( slopeperpendicular * (x + (baselength/2)) )),
-      cbind((x - (baselength/2)), c + ( slopeperpendicular * (x - (baselength/2)) )),
+      # cbind((x + (baselength/2)), c + ( slopeperpendicular * (x + (baselength/2)) )),
+      # cbind((x - (baselength/2)), c + ( slopeperpendicular * (x - (baselength/2)) )),
+      c(x + (cos(atan(slopeperpendicular)) * baselength),y + (sin(atan(slopeperpendicular)) * baselength)),
+      c(x - (cos(atan(slopeperpendicular)) * baselength),y - (sin(atan(slopeperpendicular)) * baselength)),
       cbind(xend,yend)
    )
 
 }
-
-
-

@@ -25,7 +25,7 @@ of the plane should be treated as behind and which front}
 \item{iTreatAs}{Explained in mViewBeginsFromCoordinates in fGetTransformedCoordinates.}
 }
 \description{
-Removes unnecessary points behind the plane and keeps only those behind points 
+Removes unnecessary points behind the plane and keeps only those behind points
 which are adjacent to a point in front for interpolation by
 fGetInterpolatedPointsAtDivisionPlane
 }
