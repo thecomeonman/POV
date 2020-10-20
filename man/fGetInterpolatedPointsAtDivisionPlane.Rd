@@ -17,7 +17,7 @@ fGetInterpolatedPointsAtDivisionPlane(
 \item{mCoordinates}{matrix with three columns [x,y,z] with >= one rows}
 
 \item{nDivisionPlaneCoefficients}{matrix with four columns [a,b,c,d] such that
-the equation of the plan is ax + by + cz = d. This is the plane across which
+the equation of the plan is ax + by + cz + d = 0. This is the plane across which
 the data could be spread across}
 
 \item{bOriginDestinationInPositiveDirection}{boolean. Dictates which side

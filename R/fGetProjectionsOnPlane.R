@@ -44,7 +44,8 @@ fGetProjectionsOnPlane = function(
                 } else if (
 
                     # on origin plane
-                    all ( ( vnPointToProject - mOriginCoordinates ) * ( mScreenCoordinates - mOriginCoordinates ) == 0 )
+                    # all ( ( vnPointToProject - mOriginCoordinates ) * ( nScreenPlaneCoefficients - mOriginCoordinates ) == 0 )
+                    sum(c(vnPointToProject,1) * nScreenPlaneCoefficients) == sum(c(mOriginCoordinates,1) * nScreenPlaneCoefficients) 
 
                 ) {
 
