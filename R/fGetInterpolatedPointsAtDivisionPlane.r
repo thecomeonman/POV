@@ -2,7 +2,7 @@
 #' fGetTransformedCoordinates to get the points at the dividing plane
 #' @param mCoordinates matrix with three columns [x,y,z] with >= one rows
 #' @param nDivisionPlaneCoefficients matrix with four columns [a,b,c,d] such that
-#' the equation of the plan is ax + by + cz = d. This is the plane across which
+#' the equation of the plan is ax + by + cz + d = 0. This is the plane across which
 #' the data could be spread across
 #' @param bOriginDestinationInPositiveDirection boolean. Dictates which side
 #' of the plane should be treated as behind and which front
@@ -49,6 +49,7 @@ fGetInterpolatedPointsAtDivisionPlane = function(
                 )
             )
         )
+        
         viCoordinatesToTransform = table(viFrontOfScreenStretches[!vbCoordinatesToTransform])
         viCoordinatesToTransform = which(
             viFrontOfScreenStretches == as.integer(names(viCoordinatesToTransform)[1])
