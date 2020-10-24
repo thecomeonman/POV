@@ -22,7 +22,6 @@ fRemovePointsBehindDividingPlane = function(
 
     # print(bOriginDestinationInPositiveDirection)
 
-
     # retaining at most two points behind the screen for each stretch of points
     # behind the screen so that closed polygons from the points ahead of the screen
     # can be computed

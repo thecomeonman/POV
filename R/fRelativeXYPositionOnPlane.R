@@ -3,6 +3,7 @@
 #' @param mScreenCoordinates a point on the plane
 #' @param mYAxis The Y axis vector [x,y,z] with one row
 #' @param mXAxis The X axis vector [x,y,z] with one row
+#' @export
 fRelativeXYPositionOnPlane = function (
     mSolutions,
     mScreenCoordinates,
