@@ -2,6 +2,7 @@
 
 export(fCrossProduct)
 export(fDistance)
+export(fDotProduct)
 export(fGet2DRoundedBoundaryAroundPath)
 export(fGet3DTrajectoryBetweenTwoPoints)
 export(fGetInterpolatedPointsAtDivisionPlane)

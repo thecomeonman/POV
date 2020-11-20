@@ -31,10 +31,10 @@ fPointLineSegmentProjection = function(
 
    # if line segment start == line segment end then euclid distance
    vnDistanceBetweenStartEnd = fDistance(
-      vnStartX,
-      vnStartY,
-      vnEndX,
-      vnEndY
+      vnx = vnStartX,
+      vny = vnStartY,
+      vnendx = vnEndX,
+      vnendy = vnEndY
    )
 
    vnZeroDistances = vnDistanceBetweenStartEnd == 0
