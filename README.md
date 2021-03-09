@@ -3,6 +3,15 @@ plots using ggplot. The below is a set of plots built using ggplot with
 the underlying data processed using this library and stitched together
 into a GIF to emphasise the 3D-ness.
 
+The functions are a little low level so you may need some programming
+comfort to use it at this point. The code in the README.Rmd file should
+give you some ideas on how to use it. The source code is disgusting so
+go into it at your own peril. Some day it will be clean.
+
+Bug reports are welcome! Feature requests are also welcome but this is a
+side project for me so they will be worked on at a lower priority and at
+author’s discretion.
+
 ![](./example.gif)
 
 Data
@@ -216,6 +225,9 @@ pitches.<a href="https://twitter.com/hashtag/TidyTuesday?src=hash&amp;ref_src=tw
 </blockquote>
 <p>
 </p>
-These are just more complicated datasets but at the heart of it is the
-same approach as described above. The library has some helper functions
-to draw 3D paths, etc.
+This was generated using `geom_pitch` from my other library, CodaBonito
+( available her github.com/thecomeonman/CodaBonito. ) Here’s a simple
+example to demonstrate usage. Play around with the arguments to get a
+feel for how it works.
+
+![](README_files/figure-markdown_strict/CodaBonito1-1.png)
