@@ -853,7 +853,7 @@ cat('<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Sneak peek into a 
 
 ```
 
-This was generated using `geom_pitch` from my other library, CodaBonito ( available her github.com/thecomeonman/CodaBonito. )
+This was generated using `geom_pitch` from my other library, [CodaBonito][github.com/thecomeonman/CodaBonito].
 Here's a simple example to demonstrate usage. Play around with the arguments to get a feel for how it works.
 
 ```{r CodaBonito1, cache=FALSE, echo=FALSE, warning=FALSE, message=FALSE, fig.width = 15, fig.height = 8, results = 'asis'}
