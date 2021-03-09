@@ -225,8 +225,8 @@ pitches.<a href="https://twitter.com/hashtag/TidyTuesday?src=hash&amp;ref_src=tw
 </blockquote>
 <p>
 </p>
-This was generated using `geom_pitch` from my other library, CodaBonito
-( available her github.com/thecomeonman/CodaBonito. ) Here’s a simple
+This was generated using `geom_pitch` from my other library,
+\[CodaBonito\]\[github.com/thecomeonman/CodaBonito\]. Here’s a simple
 example to demonstrate usage. Play around with the arguments to get a
 feel for how it works.
 
