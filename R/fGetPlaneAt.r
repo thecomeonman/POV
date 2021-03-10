@@ -3,10 +3,24 @@
 #' @export
 fGetPlaneAt = function(
     mOriginCoordinates,
-    mVector1,
-    mVector2
+    mNormalVector = NULL,
+    mVector1 = NULL,
+    mVector2 = NULL
     # nScreenPlaneCoefficients
 ) {
+
+    if ( all(!is.null(mNormalVector)) ) {
+
+        return (
+            c(
+               -mNormalVector,
+               sum(
+                   -mNormalVector * mOriginCoordinates
+               )
+            )
+        )
+
+    }
 
     mAnotherDivisionPlaneAxisVector = fCrossProduct(
         ( mVector1 / ( sum(mVector1^2) ^ 0.5 ) ),
@@ -15,7 +29,7 @@ fGetPlaneAt = function(
 
     # if the above two vectors are parallel, i.e. viewing direction is along z axis
     # Don't know what a good default to this is
-    if ( sum(mAnotherDivisionPlaneAxisVector) == 0 ) {
+    if ( all(mAnotherDivisionPlaneAxisVector == 0 ) ) {
 
         # nDivisionPlaneCoefficients = c(
         #     nScreenPlaneCoefficients[1:3],

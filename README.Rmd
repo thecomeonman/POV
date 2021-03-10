@@ -69,7 +69,9 @@ opts_chunk$set(
 
 ## Data
 
-The data in this example is just a cube with eight corners specified.
+The data in this example is just a cube with eight corners specified. We're
+going to draw a 3D scatter plot of these 8 points with their projections / 
+shadows on each of the three planes.
 
 ```{r Data, cache=FALSE, echo=FALSE, warning=FALSE, message=FALSE, fig.width = 15, fig.height = 8, results = 'asis'}
 kable(df, format = 'markdown')
@@ -82,7 +84,7 @@ kable(df, format = 'markdown')
 We calculate the shadow of the data on a plane as if the light source was
 very large, and very far away from the points, perpendicular to the plane. Think
 of it as the noon sun casting a shadow on the ground where the ground is the plane.
-In any other situation, the shadow will be a little distorted. Feel free to play
+In any other orientation, the shadow will be a little distorted. Play around
 with the parameters to see the results
 
 We will do this thrice, once for each plane - the XY, the YZ, and the XZ plane.
@@ -115,11 +117,9 @@ mOriginCoordinates[3] = nInfinitySubstitute
 
 # calculate the equation of the plane for the screen
 # ( which, we know, should be the xy plane so 0x + 0y + z = 0 )
-nScreenPlaneCoefficients = c(
-   mScreenCoordinates - mOriginCoordinates,
-   sum( 
-       ( mScreenCoordinates - mOriginCoordinates ) * mScreenCoordinates 
-   )
+nScreenPlaneCoefficients = fGetPlaneAt(
+    mOriginCoordinates = mScreenCoordinates,
+    mNormalVector = mOriginCoordinates - mScreenCoordinates
 )
 
 # Getting the shadow coordinates
@@ -139,7 +139,7 @@ kable(mdfprojectionxy, format = 'markdown')
 You can see the z coordinate being zero, and the x and y coordinates being 
 four points repeated twice each with a minor change in the coordinates. This 
 difference between the almost duplicates is because our light sources is not 
-actually at infinity but so the change in the z coordinates causes a really
+actually at infinity and the change in the z coordinates causes a really
 small change in the shadow's position as well. You can also think of it as you 
 seeing a cube from very far away from the same point as where the light source 
 is. You'd almost see only a square but in actuality there is just a little bit
@@ -163,11 +163,9 @@ mOriginCoordinates = mScreenCoordinates
 mScreenCoordinates[2] = 0
 mOriginCoordinates[2] = nInfinitySubstitute
 
-nScreenPlaneCoefficients = c(
-   mScreenCoordinates - mOriginCoordinates,
-   sum( 
-       ( mScreenCoordinates - mOriginCoordinates ) * mScreenCoordinates 
-   )
+nScreenPlaneCoefficients = fGetPlaneAt(
+    mOriginCoordinates = mScreenCoordinates,
+    mNormalVector = mOriginCoordinates - mScreenCoordinates
 )
 
 mdfprojectionxz = fGetProjectionsOnPlane(
@@ -189,12 +187,11 @@ mOriginCoordinates = mScreenCoordinates
 mScreenCoordinates[1] = 0
 mOriginCoordinates[1] = nInfinitySubstitute
 
-nScreenPlaneCoefficients = c(
-   mScreenCoordinates - mOriginCoordinates,
-   sum( 
-       ( mScreenCoordinates - mOriginCoordinates ) * mScreenCoordinates 
-   )
+nScreenPlaneCoefficients = fGetPlaneAt(
+    mOriginCoordinates = mScreenCoordinates,
+    mNormalVector = mOriginCoordinates - mScreenCoordinates
 )
+
 mdfprojectionyz = fGetProjectionsOnPlane(
     as.matrix(df),
     mOriginCoordinates,
@@ -211,21 +208,21 @@ would look like when viewed from a particular point.
 
 ```{r ShadowProjections, cache=FALSE, echo=FALSE, warning=FALSE, message=FALSE, fig.width = 15, fig.height = 8, results = 'hide'}
 
-mdfprojectionxy = fGetTransformedCoordinatesDiscard(
-    mdfprojectionxy, # data to project on the screen
-    mFinalVieWCoordinates, # origin coordinates
-    mFinalScreenCoordinates, # screen coordinates
+mdfprojectionxy = fGetTransformedCoordinates(
+    mCoordinates = mdfprojectionxy, # data to project on the screen
+    mOriginCoordinates = mFinalVieWCoordinates, # origin coordinates
+    mScreenCoordinates = mFinalScreenCoordinates, # screen coordinates
     mZAxisVector = c(0,0,1), # which way is up for the viewer
     iTreatAs = 1 # treat each point as an independent point, not part of a path or a polygon
 ) 
-mdfprojectionyz = fGetTransformedCoordinatesDiscard(
+mdfprojectionyz = fGetTransformedCoordinates(
     mdfprojectionyz,
     mFinalVieWCoordinates,
     mFinalScreenCoordinates,
     mZAxisVector = c(0,0,1),
     iTreatAs = 1
 ) 
-mdfprojectionxz = fGetTransformedCoordinatesDiscard(
+mdfprojectionxz = fGetTransformedCoordinates(
     mdfprojectionxz,
     mFinalVieWCoordinates,
     mFinalScreenCoordinates,
@@ -242,7 +239,7 @@ what they are. So we directly calculate their project on the screen.
 
 ```{r DataProjections, cache=FALSE, echo=FALSE, warning=FALSE, message=FALSE, fig.width = 15, fig.height = 8, results = 'hide'}
 
-mdfprojection = fGetTransformedCoordinatesDiscard(
+mdfprojection = fGetTransformedCoordinates(
     as.matrix(df),
     mFinalVieWCoordinates,
     mFinalScreenCoordinates,
@@ -333,7 +330,7 @@ mdfprojectionx = lapply(
    0:5,
    function(i) {
          
-      mtransformed = fGetTransformedCoordinatesDiscard(
+      mtransformed = fGetTransformedCoordinates(
           as.matrix(rbind(
              c(0,0,i),
              c(5,0,i)
@@ -369,7 +366,7 @@ mdfprojectiony = lapply(
    0:5,
    function(i) {
          
-      mtransformed = fGetTransformedCoordinatesDiscard(
+      mtransformed = fGetTransformedCoordinates(
           as.matrix(rbind(
              c(i,0,0),
              c(i,5,0)
@@ -389,7 +386,7 @@ mdfprojectionz = lapply(
    0:5,
    function(i) {
          
-      mtransformed = fGetTransformedCoordinatesDiscard(
+      mtransformed = fGetTransformedCoordinates(
           as.matrix(rbind(
              c(0,i,0),
              c(0,i,5)
@@ -601,21 +598,21 @@ f3DScatterPlot = function (
    # projecting the shadows on the screen
    {
          
-      mdfprojectionxy = fGetTransformedCoordinatesDiscard(
+      mdfprojectionxy = fGetTransformedCoordinates(
           mdfprojectionxy,
           mOriginCoordinates = mFinalOriginCoordinates,
           mScreenCoordinates = mFinalScreenCoordinates,
           mZAxisVector = c(0,0,1),
           iTreatAs = 1
       ) 
-      mdfprojectionyz = fGetTransformedCoordinatesDiscard(
+      mdfprojectionyz = fGetTransformedCoordinates(
           mdfprojectionyz,
           mOriginCoordinates = mFinalOriginCoordinates,
           mScreenCoordinates = mFinalScreenCoordinates,
           mZAxisVector = c(0,0,1),
           iTreatAs = 1
       ) 
-      mdfprojectionxz = fGetTransformedCoordinatesDiscard(
+      mdfprojectionxz = fGetTransformedCoordinates(
           mdfprojectionxz,
           mOriginCoordinates = mFinalOriginCoordinates,
           mScreenCoordinates = mFinalScreenCoordinates,
@@ -627,7 +624,7 @@ f3DScatterPlot = function (
    # projectin the data on the screen
    {
       
-      mdfprojection = fGetTransformedCoordinatesDiscard(
+      mdfprojection = fGetTransformedCoordinates(
           as.matrix(df),
                 mOriginCoordinates = mFinalOriginCoordinates,
                 mScreenCoordinates = mFinalScreenCoordinates,
@@ -644,7 +641,7 @@ f3DScatterPlot = function (
          0:5,
          function(i) {
                
-            mtransformed = fGetTransformedCoordinatesDiscard(
+            mtransformed = fGetTransformedCoordinates(
                 as.matrix(rbind(
                    c(0,0,i),
                    c(5,0,i)
@@ -664,7 +661,7 @@ f3DScatterPlot = function (
          0:5,
          function(i) {
                
-            mtransformed = fGetTransformedCoordinatesDiscard(
+            mtransformed = fGetTransformedCoordinates(
                 as.matrix(rbind(
                    c(i,0,0),
                    c(i,5,0)
@@ -684,7 +681,7 @@ f3DScatterPlot = function (
          0:5,
          function(i) {
                
-            mtransformed = fGetTransformedCoordinatesDiscard(
+            mtransformed = fGetTransformedCoordinates(
                 as.matrix(rbind(
                    c(0,i,0),
                    c(0,i,5)
@@ -853,7 +850,7 @@ cat('<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Sneak peek into a 
 
 ```
 
-This was generated using `geom_pitch` from my other library, [CodaBonito][github.com/thecomeonman/CodaBonito].
+This was generated using `geom_pitch` from my other library, [CodaBonito](https://github.com/thecomeonman/CodaBonito)
 Here's a simple example to demonstrate usage. Play around with the arguments to get a feel for how it works.
 
 ```{r CodaBonito1, cache=FALSE, echo=FALSE, warning=FALSE, message=FALSE, fig.width = 15, fig.height = 8, results = 'asis'}
@@ -869,3 +866,4 @@ p1 = ggplot() +
 print(p1)
 
 ```
+

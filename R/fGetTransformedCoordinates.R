@@ -38,9 +38,21 @@ fGetTransformedCoordinates = function (
     iTreatAs = 3
 ) {
 
+    # browser()
     # some input parameters that need to be pre computed
     if ( T ) {
 
+        
+        # Getting the shadow coordinates
+        # mYAxisVectorOnScreen = fGetProjectionsOnPlane(
+        #     mScreenCoordinates + t(cbind(mZAxisVector)),
+        #     mOriginCoordinates,
+        #     fGetPlaneAt(   
+        #         mOriginCoordinates = mScreenCoordinates,
+        #         mNormalVector = mOriginCoordinates - mScreenCoordinates
+        #     )
+        # )
+        # mYAxisVectorOnScreen = mYAxisVectorOnScreen / sum(mYAxisVectorOnScreen ^ 2 )
 
         # This is needed only for y axis of final projection
         mYAxisVectorOnScreen = mScreenCoordinates + ( mZAxisVector / ( sum(mZAxisVector^2) ^ 0.5 ) )
@@ -61,29 +73,31 @@ fGetTransformedCoordinates = function (
 
         # We can't let points all the way till on the screen plane be visualised because
         # the coordinates for them will be ~inf. So we'll only include points which
-        # are at least a little ahead of mScreenCoordinates from the direction of mOriginCoordinates
-
-        mVectorForDividingPlane = fCrossProduct(
+        # are at least a little ahead of mScreenCoordinates from the direction of mOriginCoordinates# 
+        mVectorInDividingPlane = fCrossProduct(
             mScreenCoordinates - mOriginCoordinates,
             mZAxisVector
         )
 
         if ( is.null(mViewBeginsFromCoordinates) ) {
 
+# print(mOriginCoordinates)
+# print(mVectorInDividingPlane)
+# print(mScreenCoordinates - mOriginCoordinates)
 
             nDivisionPlaneCoefficients = fGetPlaneAt(
-                mOriginCoordinates,
-                mVectorForDividingPlane,
-                mScreenCoordinates - mOriginCoordinates
+                mOriginCoordinates = mOriginCoordinates,
+                mVector1 = mVectorInDividingPlane,
+                mVector2 = mScreenCoordinates - mOriginCoordinates
                 # nScreenPlaneCoefficients
             )
 
         } else {
 
             nDivisionPlaneCoefficients = fGetPlaneAt(
-                mViewBeginsFromCoordinates,
-                mVectorForDividingPlane,
-                mScreenCoordinates - mViewBeginsFromCoordinates
+                mOriginCoordinates = mViewBeginsFromCoordinates,
+                mVector1 = mVectorInDividingPlane,
+                mVector2 = mScreenCoordinates - mViewBeginsFromCoordinates
                 # nScreenPlaneCoefficients
             )
 

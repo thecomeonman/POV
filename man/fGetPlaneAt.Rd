@@ -4,7 +4,12 @@
 \alias{fGetPlaneAt}
 \title{Getting plane coefficients from two vectors and a point that lie on the plane}
 \usage{
-fGetPlaneAt(mOriginCoordinates, mVector1, mVector2)
+fGetPlaneAt(
+  mOriginCoordinates,
+  mNormalVector = NULL,
+  mVector1 = NULL,
+  mVector2 = NULL
+)
 }
 \value{
 [a,b,c,d] such that ax + by + cz = d

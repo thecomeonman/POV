@@ -18,6 +18,8 @@ Data
 ----
 
 The data in this example is just a cube with eight corners specified.
+We’re going to draw a 3D scatter plot of these 8 points with their
+projections / shadows on each of the three planes.
 
 <table>
 <thead>
@@ -79,9 +81,8 @@ Shadows on the three planes
 We calculate the shadow of the data on a plane as if the light source
 was very large, and very far away from the points, perpendicular to the
 plane. Think of it as the noon sun casting a shadow on the ground where
-the ground is the plane. In any other situation, the shadow will be a
-little distorted. Feel free to play with the parameters to see the
-results
+the ground is the plane. In any other orientation, the shadow will be a
+little distorted. Play around with the parameters to see the results
 
 We will do this thrice, once for each plane - the XY, the YZ, and the XZ
 plane.
@@ -136,7 +137,7 @@ The projection on the XY plane is:
 You can see the z coordinate being zero, and the x and y coordinates
 being four points repeated twice each with a minor change in the
 coordinates. This difference between the almost duplicates is because
-our light sources is not actually at infinity but so the change in the z
+our light sources is not actually at infinity and the change in the z
 coordinates causes a really small change in the shadow’s position as
 well. You can also think of it as you seeing a cube from very far away
 from the same point as where the light source is. You’d almost see only
@@ -226,7 +227,7 @@ pitches.<a href="https://twitter.com/hashtag/TidyTuesday?src=hash&amp;ref_src=tw
 <p>
 </p>
 This was generated using `geom_pitch` from my other library,
-\[CodaBonito\]\[github.com/thecomeonman/CodaBonito\]. Here’s a simple
+[CodaBonito](https://github.com/thecomeonman/CodaBonito) Here’s a simple
 example to demonstrate usage. Play around with the arguments to get a
 feel for how it works.
 
