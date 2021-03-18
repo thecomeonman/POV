@@ -1,7 +1,7 @@
 #' @export
 fDistance <- function(
-    vnx, vny, vnz = 0, vnendx, vnendy,
-    vnendz = 0
+    vnx, vny, vnz = 0,
+    vnendx, vnendy, vnendz = 0
 ){
 
   distResult = (

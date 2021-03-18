@@ -7,9 +7,20 @@
 fGetPlaneAt(
   mOriginCoordinates,
   mNormalVector = NULL,
-  mVector1 = NULL,
-  mVector2 = NULL
+  mInPlaneVector1 = NULL,
+  mInPlaneVector2 = NULL
 )
+}
+\arguments{
+\item{mOriginCoordinates}{a point on the plane}
+
+\item{mNormalVector}{vector perpedicular to the plane}
+
+\item{mInPlaneVector1}{a vector in the plane}
+
+\item{mInPlaneVector2}{a vector in the plane != mInPlaneVector1
+You need to supply mOriginCoordinates and either mNormalVector or
+mInPlaneVector1, mInPlaneVector2 to identify a plane}
 }
 \value{
 [a,b,c,d] such that ax + by + cz = d

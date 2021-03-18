@@ -45,7 +45,7 @@ fGetProjectionsOnPlane = function(
 
                     # on origin plane
                     # all ( ( vnPointToProject - mOriginCoordinates ) * ( nScreenPlaneCoefficients - mOriginCoordinates ) == 0 )
-                    sum(c(vnPointToProject,1) * nScreenPlaneCoefficients) == sum(c(mOriginCoordinates,1) * nScreenPlaneCoefficients) 
+                    sum(c(vnPointToProject,1) * nScreenPlaneCoefficients) == sum(c(mOriginCoordinates,1) * nScreenPlaneCoefficients)
 
                 ) {
 

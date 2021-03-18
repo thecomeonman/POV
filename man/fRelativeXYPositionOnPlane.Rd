@@ -2,12 +2,12 @@
 % Please edit documentation in R/fRelativeXYPositionOnPlane.R
 \name{fRelativeXYPositionOnPlane}
 \alias{fRelativeXYPositionOnPlane}
-\title{Transforms 3d Points on a plane to the relative 2d coordinates}
+\title{Transforms 3d Points on a plane to the relative 2d coordinates from a specified origin}
 \usage{
-fRelativeXYPositionOnPlane(mSolutions, mScreenCoordinates, mYAxis, mXAxis)
+fRelativeXYPositionOnPlane(mCoordinates, mScreenCoordinates, mYAxis, mXAxis)
 }
 \arguments{
-\item{mSolutions}{the raw coordinates [x,y,z] with any number of rows}
+\item{mCoordinates}{the raw coordinates [x,y,z] with any number of rows}
 
 \item{mScreenCoordinates}{a point on the plane}
 
@@ -16,5 +16,5 @@ fRelativeXYPositionOnPlane(mSolutions, mScreenCoordinates, mYAxis, mXAxis)
 \item{mXAxis}{The X axis vector [x,y,z] with one row}
 }
 \description{
-Transforms 3d Points on a plane to the relative 2d coordinates
+Transforms 3d Points on a plane to the relative 2d coordinates from a specified origin
 }

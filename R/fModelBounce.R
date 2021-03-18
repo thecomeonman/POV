@@ -1,3 +1,4 @@
+#' Experimental - generating random trajectories with bounes
 #' @import data.table
 #' @export
 fModelBounce = function(

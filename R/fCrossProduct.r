@@ -3,14 +3,14 @@
 #' @param v2, a matrix [x,y,z]
 #' @export
 fCrossProduct = function(v1, v2) {
-    
-    if ( class(v1) != 'matrix') {
-        warning('Assuming vector of 3 reals has been passed as v1')
+
+    if ( all(class(v1) != 'matrix')) {
+        warning('Forcing v1 to a matrix(v1, ncol = 3)')
         v1 = matrix(v1, ncol = 3)
     }
 
-    if ( class(v2) != 'matrix') {
-        warning('Assuming vector of 3 reals has been passed as v2')
+    if ( all(class(v2) != 'matrix')) {
+        warning('Forcing v2 to a matrix(v2, ncol = 3)')
         v2 = matrix(v2, ncol = 3)
     }
 

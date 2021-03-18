@@ -15,6 +15,9 @@ fGetTriangleAlongLineSegment(
 \arguments{
 \item{baselength}{the bigger it is, the wider the base of the arrow}
 }
+\value{
+coordinates of a triangle which form an arrowhead pointing from xy to xyend
+}
 \description{
 Mainly to draw arrowheads
 }

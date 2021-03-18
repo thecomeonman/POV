@@ -27,7 +27,7 @@ fRemovePointsBehindDividingPlane = function(
     # can be computed
     vbCoordinatesToTransform = c(
         bOriginDestinationInPositiveDirection == (
-            cbind(mCoordinates, 1) %*% nDivisionPlaneCoefficients >= 0
+            cbind(mCoordinates, -1) %*% nDivisionPlaneCoefficients >= 0
         )
     )
 

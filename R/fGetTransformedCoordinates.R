@@ -11,7 +11,7 @@
 #' @param iTreatAs 1 for isolated points, 2 for path, 3 for polygon. This matters
 #' if you have data going behind the mOriginCoordinates / mViewBeginsFromCoordinates
 #' as explained in mViewBeginsFromCoordinates.
-#' @param mZAxisVector Which way is up for the viewer
+#' @param mVectorPointingUpOnScreen Which way is up for the viewer
 #' @param mViewBeginsFromCoordinates if NULL, all objects in front of origin, where
 #' front is the direciton in which the screen coordinates are, are projected. If
 #' a set of coordinates is given then all objects in front of that coordinate, where
@@ -19,22 +19,31 @@
 #' other objects are treated as behind the view. If this coordinate is on the opposite
 #' side of the origin as the screen then you'll delete all objects and get an empty
 #' array in the results. This dividing plane and iTreatAs together also affect
-#' how points are treat when data is crossing the division. Points behind the
-#' division are just deleted. Paths and polygons have an interpolated coordinate
+#' how points are treated when data is crossing the dividing plane. Points behind the
+#' dividing plane are just deleted but paths / polygons get an interpolated coordinate
 #' on the dividing plane which helps retain a continuity to the data when plotted
 #' @return If inputs are valid, a matrix with 2 columns for the x,y coordinates
-#' on the screen, an optional column group: linking continuous stretches in front of
-#' the screening plane which can be used in geom_path(aes(group = V3)), an optional
+#' on the screen, an optional column, group: linking continuous stretches in front of
+#' the screening plane which can be used in geom_path(aes(group = group)), an optional
 #' column inputOrder: which lets you map the output back to the data that was sent
 #' in. If invalid inputs then you'll get a NULL.
-#' @import zoo
+#' @example
+#' # standing two units away from the screen and looking at a square of side length 2 units, placed parallel to the screen, one unit away from the screen
+#' fGetTransformedCoordinates(
+#'   mCoordinates = rbind(cbind(1,1,1), cbind(1,-1,1), cbind(-1,-1,1), cbind(-1,1,1)), # a square of side length 2 on the XY plane,
+#'   mOriginCoordinates = cbind(0,0,2), # a point on the Z axis
+#'   mScreenCoordinates = cbind(0,0,0), # another point on the Z axis
+#'   mViewBeginsFromCoordinates = NULL,
+#'   mVectorPointingUpOnScreen = c(0,1,0), # looking along the Z axis so
+#'   iTreatAs = 3 # treat as a
+#' )
 #' @export
 fGetTransformedCoordinates = function (
     mCoordinates,
     mOriginCoordinates,
     mScreenCoordinates,
     mViewBeginsFromCoordinates = NULL,
-    mZAxisVector = c(0,0,1),
+    mVectorPointingUpOnScreen = c(0,0,1),
     iTreatAs = 3
 ) {
 
@@ -42,12 +51,12 @@ fGetTransformedCoordinates = function (
     # some input parameters that need to be pre computed
     if ( T ) {
 
-        
+
         # Getting the shadow coordinates
         # mYAxisVectorOnScreen = fGetProjectionsOnPlane(
-        #     mScreenCoordinates + t(cbind(mZAxisVector)),
+        #     mScreenCoordinates + t(cbind(mVectorPointingUpOnScreen)),
         #     mOriginCoordinates,
-        #     fGetPlaneAt(   
+        #     fGetPlaneAt(
         #         mOriginCoordinates = mScreenCoordinates,
         #         mNormalVector = mOriginCoordinates - mScreenCoordinates
         #     )
@@ -55,7 +64,7 @@ fGetTransformedCoordinates = function (
         # mYAxisVectorOnScreen = mYAxisVectorOnScreen / sum(mYAxisVectorOnScreen ^ 2 )
 
         # This is needed only for y axis of final projection
-        mYAxisVectorOnScreen = mScreenCoordinates + ( mZAxisVector / ( sum(mZAxisVector^2) ^ 0.5 ) )
+        mYAxisVectorOnScreen = mScreenCoordinates + ( mVectorPointingUpOnScreen / ( sum(mVectorPointingUpOnScreen^2) ^ 0.5 ) )
 
 
         # this is the plane on which to project the data
@@ -73,22 +82,17 @@ fGetTransformedCoordinates = function (
 
         # We can't let points all the way till on the screen plane be visualised because
         # the coordinates for them will be ~inf. So we'll only include points which
-        # are at least a little ahead of mScreenCoordinates from the direction of mOriginCoordinates# 
+        # are at least a little ahead of mScreenCoordinates from the direction of mOriginCoordinates#
         mVectorInDividingPlane = fCrossProduct(
             mScreenCoordinates - mOriginCoordinates,
-            mZAxisVector
+            mVectorPointingUpOnScreen
         )
 
         if ( is.null(mViewBeginsFromCoordinates) ) {
 
-# print(mOriginCoordinates)
-# print(mVectorInDividingPlane)
-# print(mScreenCoordinates - mOriginCoordinates)
-
             nDivisionPlaneCoefficients = fGetPlaneAt(
                 mOriginCoordinates = mOriginCoordinates,
-                mVector1 = mVectorInDividingPlane,
-                mVector2 = mScreenCoordinates - mOriginCoordinates
+                mNormalVector = mScreenCoordinates - mOriginCoordinates
                 # nScreenPlaneCoefficients
             )
 
@@ -96,8 +100,7 @@ fGetTransformedCoordinates = function (
 
             nDivisionPlaneCoefficients = fGetPlaneAt(
                 mOriginCoordinates = mViewBeginsFromCoordinates,
-                mVector1 = mVectorInDividingPlane,
-                mVector2 = mScreenCoordinates - mViewBeginsFromCoordinates
+                mNormalVector = mScreenCoordinates - mViewBeginsFromCoordinates
                 # nScreenPlaneCoefficients
             )
 
@@ -230,19 +233,19 @@ fGetTransformedCoordinates = function (
         )
         mYAxis = matrix(mYAxis, ncol = 3)
 
-        mZAxisVectorNew = mScreenCoordinates - mOriginCoordinates
-        mZAxisVectorNew = mZAxisVectorNew / sum(mZAxisVectorNew^2) ^ 0.5
+        mVectorPointingUpOnScreenNew = mScreenCoordinates - mOriginCoordinates
+        mVectorPointingUpOnScreenNew = mVectorPointingUpOnScreenNew / sum(mVectorPointingUpOnScreenNew^2) ^ 0.5
 
-        mXAxisVectorNew = fCrossProduct(mZAxisVectorNew, mYAxis - mScreenCoordinates)
+        mXAxisVectorNew = fCrossProduct(mVectorPointingUpOnScreenNew, mYAxis - mScreenCoordinates)
 
         mYAxisVectorNew = mYAxis / sum(mYAxis^2) ^ 0.5
         mXAxisVectorNew = mXAxisVectorNew / sum(mXAxisVectorNew^2) ^ 0.5
 
         mResult = fRelativeXYPositionOnPlane(
-            mSolutions,
-            mScreenCoordinates,
-            mYAxis - mScreenCoordinates,
-            mXAxisVectorNew
+            mCoordinates = mSolutions,
+            mScreenCoordinates = mScreenCoordinates,
+            mYAxis = mYAxis - mScreenCoordinates,
+            mXAxis = mXAxisVectorNew
         )
 
     }

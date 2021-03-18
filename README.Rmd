@@ -119,7 +119,7 @@ mOriginCoordinates[3] = nInfinitySubstitute
 # ( which, we know, should be the xy plane so 0x + 0y + z = 0 )
 nScreenPlaneCoefficients = fGetPlaneAt(
     mOriginCoordinates = mScreenCoordinates,
-    mNormalVector = mOriginCoordinates - mScreenCoordinates
+    mNormalVector = mScreenCoordinates - mOriginCoordinates
 )
 
 # Getting the shadow coordinates
@@ -165,7 +165,7 @@ mOriginCoordinates[2] = nInfinitySubstitute
 
 nScreenPlaneCoefficients = fGetPlaneAt(
     mOriginCoordinates = mScreenCoordinates,
-    mNormalVector = mOriginCoordinates - mScreenCoordinates
+    mNormalVector = mScreenCoordinates - mOriginCoordinates
 )
 
 mdfprojectionxz = fGetProjectionsOnPlane(
@@ -189,7 +189,7 @@ mOriginCoordinates[1] = nInfinitySubstitute
 
 nScreenPlaneCoefficients = fGetPlaneAt(
     mOriginCoordinates = mScreenCoordinates,
-    mNormalVector = mOriginCoordinates - mScreenCoordinates
+    mNormalVector = mScreenCoordinates - mOriginCoordinates
 )
 
 mdfprojectionyz = fGetProjectionsOnPlane(
@@ -212,21 +212,21 @@ mdfprojectionxy = fGetTransformedCoordinates(
     mCoordinates = mdfprojectionxy, # data to project on the screen
     mOriginCoordinates = mFinalVieWCoordinates, # origin coordinates
     mScreenCoordinates = mFinalScreenCoordinates, # screen coordinates
-    mZAxisVector = c(0,0,1), # which way is up for the viewer
+    mVectorPointingUpOnScreen = c(0,0,1), # which way is up for the viewer
     iTreatAs = 1 # treat each point as an independent point, not part of a path or a polygon
 ) 
 mdfprojectionyz = fGetTransformedCoordinates(
     mdfprojectionyz,
     mFinalVieWCoordinates,
     mFinalScreenCoordinates,
-    mZAxisVector = c(0,0,1),
+    mVectorPointingUpOnScreen = c(0,0,1),
     iTreatAs = 1
 ) 
 mdfprojectionxz = fGetTransformedCoordinates(
     mdfprojectionxz,
     mFinalVieWCoordinates,
     mFinalScreenCoordinates,
-    mZAxisVector = c(0,0,1),
+    mVectorPointingUpOnScreen = c(0,0,1),
     iTreatAs = 1
 ) 
 
@@ -243,7 +243,7 @@ mdfprojection = fGetTransformedCoordinates(
     as.matrix(df),
     mFinalVieWCoordinates,
     mFinalScreenCoordinates,
-    mZAxisVector = c(0,0,1),
+    mVectorPointingUpOnScreen = c(0,0,1),
     iTreatAs = 1
 )
 
@@ -337,7 +337,7 @@ mdfprojectionx = lapply(
           )),
           mFinalVieWCoordinates,
           mFinalScreenCoordinates,
-          mZAxisVector = c(0,0,1),
+          mVectorPointingUpOnScreen = c(0,0,1),
           iTreatAs = 1
       ) 
       mtransformed = cbind(mtransformed, group = i)
@@ -373,7 +373,7 @@ mdfprojectiony = lapply(
           )),
           mFinalVieWCoordinates,
           mFinalScreenCoordinates,
-          mZAxisVector = c(0,0,1),
+          mVectorPointingUpOnScreen = c(0,0,1),
           iTreatAs = 1
       ) 
       mtransformed = cbind(mtransformed, group = i)
@@ -393,7 +393,7 @@ mdfprojectionz = lapply(
           )),
           mFinalVieWCoordinates,
           mFinalScreenCoordinates,
-          mZAxisVector = c(0,0,1),
+          mVectorPointingUpOnScreen = c(0,0,1),
           iTreatAs = 1
       ) 
       mtransformed = cbind(mtransformed, group = i)
@@ -602,21 +602,21 @@ f3DScatterPlot = function (
           mdfprojectionxy,
           mOriginCoordinates = mFinalOriginCoordinates,
           mScreenCoordinates = mFinalScreenCoordinates,
-          mZAxisVector = c(0,0,1),
+          mVectorPointingUpOnScreen = c(0,0,1),
           iTreatAs = 1
       ) 
       mdfprojectionyz = fGetTransformedCoordinates(
           mdfprojectionyz,
           mOriginCoordinates = mFinalOriginCoordinates,
           mScreenCoordinates = mFinalScreenCoordinates,
-          mZAxisVector = c(0,0,1),
+          mVectorPointingUpOnScreen = c(0,0,1),
           iTreatAs = 1
       ) 
       mdfprojectionxz = fGetTransformedCoordinates(
           mdfprojectionxz,
           mOriginCoordinates = mFinalOriginCoordinates,
           mScreenCoordinates = mFinalScreenCoordinates,
-          mZAxisVector = c(0,0,1),
+          mVectorPointingUpOnScreen = c(0,0,1),
           iTreatAs = 1
       ) 
    }
@@ -628,7 +628,7 @@ f3DScatterPlot = function (
           as.matrix(df),
                 mOriginCoordinates = mFinalOriginCoordinates,
                 mScreenCoordinates = mFinalScreenCoordinates,
-          mZAxisVector = c(0,0,1),
+          mVectorPointingUpOnScreen = c(0,0,1),
           iTreatAs = 1
       )
       
@@ -648,7 +648,7 @@ f3DScatterPlot = function (
                 )),
                 mOriginCoordinates = mFinalOriginCoordinates,
                 mScreenCoordinates = mFinalScreenCoordinates,
-                mZAxisVector = c(0,0,1),
+                mVectorPointingUpOnScreen = c(0,0,1),
                 iTreatAs = 1
             ) 
             mtransformed = cbind(mtransformed, group = i)
@@ -668,7 +668,7 @@ f3DScatterPlot = function (
                 )),
                 mOriginCoordinates = mFinalOriginCoordinates,
                 mScreenCoordinates = mFinalScreenCoordinates,
-                mZAxisVector = c(0,0,1),
+                mVectorPointingUpOnScreen = c(0,0,1),
                 iTreatAs = 1
             ) 
             mtransformed = cbind(mtransformed, group = i)
@@ -688,7 +688,7 @@ f3DScatterPlot = function (
                 )),
                 mOriginCoordinates = mFinalOriginCoordinates,
                 mScreenCoordinates = mFinalScreenCoordinates,
-                mZAxisVector = c(0,0,1),
+                mVectorPointingUpOnScreen = c(0,0,1),
                 iTreatAs = 1
             ) 
             mtransformed = cbind(mtransformed, group = i)
