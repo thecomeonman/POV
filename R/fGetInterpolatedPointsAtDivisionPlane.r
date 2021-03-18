@@ -10,6 +10,7 @@
 #' @param viInputPoints if you're tracking the order of the points already then
 #' you can pass that vector and it will be updated. Can be left null if you don't
 #' care for tracking the order of the points.
+#' @import zoo
 #' @export
 fGetInterpolatedPointsAtDivisionPlane = function(
     mCoordinates,
@@ -27,7 +28,7 @@ fGetInterpolatedPointsAtDivisionPlane = function(
 
         vbCoordinatesToTransform = c(
             bOriginDestinationInPositiveDirection == (
-                cbind(mCoordinates, 1) %*% nDivisionPlaneCoefficients >= 0
+                cbind(mCoordinates, -1) %*% nDivisionPlaneCoefficients >= 0
             )
         )
 
@@ -49,7 +50,7 @@ fGetInterpolatedPointsAtDivisionPlane = function(
                 )
             )
         )
-        
+
         viCoordinatesToTransform = table(viFrontOfScreenStretches[!vbCoordinatesToTransform])
         viCoordinatesToTransform = which(
             viFrontOfScreenStretches == as.integer(names(viCoordinatesToTransform)[1])
@@ -67,7 +68,7 @@ fGetInterpolatedPointsAtDivisionPlane = function(
 
             iNextPoint = viCoordinatesToTransform[2] + 1
 
-            vnDistancesFromPlane = cbind(mCoordinates[c(viCoordinatesToTransform[2], iNextPoint),], 1) %*% nDivisionPlaneCoefficients
+            vnDistancesFromPlane = cbind(mCoordinates[c(viCoordinatesToTransform[2], iNextPoint),], -1) %*% nDivisionPlaneCoefficients
 
             mReplacementPoints = mCoordinates[viCoordinatesToTransform[2], ] - ( diff(mCoordinates[c(iNextPoint, viCoordinatesToTransform[2]),]) * ( 0.000000000001 + ( abs(vnDistancesFromPlane[1]) / ( abs(vnDistancesFromPlane[1]) + abs(vnDistancesFromPlane[2]) ) ) ) )
 
@@ -83,7 +84,8 @@ fGetInterpolatedPointsAtDivisionPlane = function(
 
             vnDistancesFromPlane = cbind(
                 mCoordinates[c(iPrevPoint, viCoordinatesToTransform[1]),],
-            1) %*% nDivisionPlaneCoefficients
+                -1
+            ) %*% nDivisionPlaneCoefficients
 
             mReplacementPoints = mCoordinates[viCoordinatesToTransform[1], ] - ( diff(mCoordinates[c(iPrevPoint, viCoordinatesToTransform[1]),]) * ( 0.000000000001 +  ( abs(vnDistancesFromPlane[2]) / ( abs(vnDistancesFromPlane[1]) + abs(vnDistancesFromPlane[2]) ) ) ) )
 
@@ -98,7 +100,7 @@ fGetInterpolatedPointsAtDivisionPlane = function(
             iPrevPoint[iPrevPoint == 0] = nrow(mCoordinates)
             iNextPoint[iNextPoint == nrow(mCoordinates) + 1] = 1
 
-            vnDistancesFromPlane = cbind(mCoordinates[c(iPrevPoint, viCoordinatesToTransform, iNextPoint),], 1) %*% nDivisionPlaneCoefficients
+            vnDistancesFromPlane = cbind(mCoordinates[c(iPrevPoint, viCoordinatesToTransform, iNextPoint),], -1) %*% nDivisionPlaneCoefficients
 
             mReplacementPoints = rbind(
                 mCoordinates[viCoordinatesToTransform[1], ] - ( diff(mCoordinates[c(iPrevPoint, viCoordinatesToTransform[1]),]) * ( 0.000000000001 + ( abs(vnDistancesFromPlane[2]) / ( abs(vnDistancesFromPlane[1]) + abs(vnDistancesFromPlane[2]) ) ) ) ),
