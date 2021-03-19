@@ -214,7 +214,7 @@ mdfprojectionxy = fGetTransformedCoordinates(
     mScreenCoordinates = mFinalScreenCoordinates, # screen coordinates
     mVectorPointingUpOnScreen = c(0,0,1), # which way is up for the viewer
     iTreatAs = 1 # treat each point as an independent point, not part of a path or a polygon
-) 
+)
 mdfprojectionyz = fGetTransformedCoordinates(
     mdfprojectionyz,
     mFinalVieWCoordinates,
