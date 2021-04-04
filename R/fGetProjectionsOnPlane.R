@@ -13,6 +13,8 @@ fGetProjectionsOnPlane = function(
 
     # browser()
 
+    # print('--------')
+
     mLHSBase = matrix(nScreenPlaneCoefficients[1:3], ncol = 3)
     mRHSBase = matrix(nScreenPlaneCoefficients[4], ncol = 1)
 
@@ -30,8 +32,17 @@ fGetProjectionsOnPlane = function(
 
             vnPointToProject = mCoordinates[iCoordinatesRow,]
 
+            # print(vnPointToProject)
+            # vnPointToProject <<- vnPointToProject
+            # print(mOriginCoordinates)
+            # mOriginCoordinates <<- mOriginCoordinates
+            # print(nScreenPlaneCoefficients)
+            # nScreenPlaneCoefficients <<- nScreenPlaneCoefficients
+
             if ( all(!is.na(vnPointToProject))) {
 
+
+                # print(sum(nScreenPlaneCoefficients[1:3] * vnPointToProject))
                 if (
 
                     # on screen plane
@@ -45,7 +56,7 @@ fGetProjectionsOnPlane = function(
 
                     # on origin plane
                     # all ( ( vnPointToProject - mOriginCoordinates ) * ( nScreenPlaneCoefficients - mOriginCoordinates ) == 0 )
-                    sum(c(vnPointToProject,1) * nScreenPlaneCoefficients) == sum(c(mOriginCoordinates,1) * nScreenPlaneCoefficients)
+                    abs(sum(c(vnPointToProject,1) * nScreenPlaneCoefficients) - sum(c(mOriginCoordinates,1) * nScreenPlaneCoefficients)) < 0.0000000001
 
                 ) {
 
@@ -57,6 +68,8 @@ fGetProjectionsOnPlane = function(
                     mRHS = mRHSBase
 
                     viCoefficientsToIncorporate = which(abs(vnPointToProject - mOriginCoordinates) > 0.0000000001)
+
+                    # print(viCoefficientsToIncorporate)
 
                     for ( iCoeff in setdiff(1:3, viCoefficientsToIncorporate) ) {
 
@@ -116,6 +129,8 @@ fGetProjectionsOnPlane = function(
 
                     }
 
+                    # print(mLHS)
+                    # print(mRHS)
                     mSolution = t(solve(mLHS, mRHS))
 
                 }

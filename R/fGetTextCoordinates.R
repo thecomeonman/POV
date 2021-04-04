@@ -6,13 +6,14 @@
 fGetTextCoordinates = function(
    cString = NULL,
    nNormaliseOutput = T,
-   bDoOutlines = F
+   bDoOutlines = F,
+   cFontFamily = 'Arial'
 ) {
 
    cFile = paste0(tempfile(),'.png')
 
    p1 = ggplot() +
-      geom_text(aes(x = 0, y = 0, label = cString), size = 10, color = 'black') +
+      geom_text(aes(x = 0, y = 0, label = cString), size = 10, color = 'black', family = cFontFamily, vjust = 0) +
       # geom_text(aes(x = 0, y = 0, label = cString), size = 10, color = 'black', fontface = 'bold') +
       # geom_text(aes(x = 0, y = 0, label = cString), size = 10, color = 'white') +
       theme(
@@ -29,7 +30,6 @@ fGetTextCoordinates = function(
       width = nchar(cString) * 0.5,
       height = length(strsplit(cString, '\n')[[1]]) * 1,
       dpi = 300
-
    )
 
    mImageData = readPNG(cFile)
@@ -89,8 +89,8 @@ fGetTextCoordinates = function(
       )
    )
 
-   dtEdges[, x := x - min(x)]
-   dtEdges[, y := y - min(y)]
+   # dtEdges[, x := x - min(x)]
+   # dtEdges[, y := y - min(y)]
 
    if ( F ) {
 
@@ -99,6 +99,7 @@ fGetTextCoordinates = function(
 
    }
 
+   # putting continuous curves together
    if ( T ) {
 
       iEdgeID = 1L
@@ -160,23 +161,27 @@ fGetTextCoordinates = function(
 
       dtBaselineEdges = fGetTextCoordinates(
          cString = 'I',
-         nNormaliseOutput = F
+         nNormaliseOutput = F,
+         cFontFamily = cFontFamily
       )
       UppercaseY = dtBaselineEdges[, diff(range(y))]
 
-      dtBaselineEdges = fGetTextCoordinates(
-         cString = 'u',
-         nNormaliseOutput = F
-      )
-      LowercaseY = dtBaselineEdges[, diff(range(y))]
+      # dtBaselineEdges = fGetTextCoordinates(
+      #    cString = 'u',
+      #    nNormaliseOutput = F,
+      #    cFontFamily = cFontFamily
+      # )
+      # LowercaseY = dtBaselineEdges[, diff(range(y))]
+      #
+      # dtBaselineEdges = fGetTextCoordinates(
+      #    cString = 'g',
+      #    nNormaliseOutput = F,
+      #    cFontFamily = cFontFamily
+      # )
+      # LowercaseLongY = dtBaselineEdges[, diff(range(y))]
 
-      dtBaselineEdges = fGetTextCoordinates(
-         cString = 'g',
-         nNormaliseOutput = F
-      )
-      LowercaseLongY = dtBaselineEdges[, diff(range(y))]
 
-      dtEdges[, y := y - ( LowercaseLongY - LowercaseY )]
+      dtEdges[, y := y - dtBaselineEdges[,min(y)]]
       dtEdges[, y := y / ( UppercaseY )]
       dtEdges[, x := x / ( UppercaseY )]
 

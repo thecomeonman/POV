@@ -4,7 +4,12 @@
 \alias{fGetTextCoordinates}
 \title{Will definitely have lots of edge cases, very WIP}
 \usage{
-fGetTextCoordinates(cString = NULL, nNormaliseOutput = T, bDoOutlines = F)
+fGetTextCoordinates(
+  cString = NULL,
+  nNormaliseOutput = T,
+  bDoOutlines = F,
+  cFontFamily = "Arial"
+)
 }
 \description{
 Will definitely have lots of edge cases, very WIP
