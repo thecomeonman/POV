@@ -51,22 +51,6 @@ fGetTransformedCoordinates = function (
     # some input parameters that need to be pre computed
     if ( T ) {
 
-
-        # Getting the shadow coordinates
-        # mYAxisVectorOnScreen = fGetProjectionsOnPlane(
-        #     mScreenCoordinates + t(cbind(mVectorPointingUpOnScreen)),
-        #     mOriginCoordinates,
-        #     fGetPlaneAt(
-        #         mOriginCoordinates = mScreenCoordinates,
-        #         mNormalVector = mOriginCoordinates - mScreenCoordinates
-        #     )
-        # )
-        # mYAxisVectorOnScreen = mYAxisVectorOnScreen / sum(mYAxisVectorOnScreen ^ 2 )
-
-        # This is needed only for y axis of final projection
-        mYAxisVectorOnScreen = mScreenCoordinates + ( mVectorPointingUpOnScreen / ( sum(mVectorPointingUpOnScreen^2) ^ 0.5 ) )
-
-
         # this is the plane on which to project the data
         # normal vector = (a,b,c)
         # a(x - x1) + b(y - y1) + c(z - z1) = 0
@@ -226,26 +210,17 @@ fGetTransformedCoordinates = function (
     # two coordinates
     if ( T ) {
 
-        mYAxis = fGetProjectionsOnPlane(
-            mYAxisVectorOnScreen,
-            mOriginCoordinates,
-            nScreenPlaneCoefficients
+        lNewAxes = fGetOrthogonalAxes(
+            mOriginCoordinates = mOriginCoordinates,
+            mScreenCoordinates = mScreenCoordinates,
+            mVectorPointingUpOnScreen = mVectorPointingUpOnScreen
         )
-        mYAxis = matrix(mYAxis, ncol = 3)
-
-        mVectorPointingUpOnScreenNew = mScreenCoordinates - mOriginCoordinates
-        mVectorPointingUpOnScreenNew = mVectorPointingUpOnScreenNew / sum(mVectorPointingUpOnScreenNew^2) ^ 0.5
-
-        mXAxisVectorNew = fCrossProduct(mVectorPointingUpOnScreenNew, mYAxis - mScreenCoordinates)
-
-        mYAxisVectorNew = mYAxis / sum(mYAxis^2) ^ 0.5
-        mXAxisVectorNew = mXAxisVectorNew / sum(mXAxisVectorNew^2) ^ 0.5
 
         mResult = fRelativeXYPositionOnPlane(
             mCoordinates = mSolutions,
             mScreenCoordinates = mScreenCoordinates,
-            mYAxis = mYAxis - mScreenCoordinates,
-            mXAxis = mXAxisVectorNew
+            mYAxis = lNewAxes$mYAxisVector,
+            mXAxis = lNewAxes$mXAxisVector
         )
 
     }

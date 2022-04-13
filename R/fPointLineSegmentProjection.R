@@ -1,6 +1,6 @@
 #' http://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
 
-#' @param bReturnNormalisedPosition T - a 0 to 1 value is returned to 
+#' @param bReturnNormalisedPosition T - a 0 to 1 value is returned to
 #' for where the point lies between the start point and end point, F - actual
 #' coordinates are returned
 #'
@@ -31,10 +31,8 @@ fPointLineSegmentProjection = function(
 
    # if line segment start == line segment end then euclid distance
    vnDistanceBetweenStartEnd = fDistance(
-      vnx = vnStartX,
-      vny = vnStartY,
-      vnendx = vnEndX,
-      vnendy = vnEndY
+      mStartCoordinates = cbind(vnStartX,vnStartY),
+      mEndCoordinates = cbind(vnEndX,vnEndY)
    )
 
    vnZeroDistances = vnDistanceBetweenStartEnd == 0

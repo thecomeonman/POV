@@ -15,7 +15,7 @@ fPointLineSegmentProjection(
 )
 }
 \arguments{
-\item{bReturnNormalisedPosition}{T - a 0 to 1 value is returned to 
+\item{bReturnNormalisedPosition}{T - a 0 to 1 value is returned to
 for where the point lies between the start point and end point, F - actual
 coordinates are returned}
 }

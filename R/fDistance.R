@@ -1,15 +1,23 @@
 #' @export
 fDistance <- function(
-    vnx, vny, vnz = 0,
-    vnendx, vnendy, vnendz = 0
+    mStartCoordinates,
+    mEndCoordinates = NULL
 ){
 
-  distResult = (
-      ( (vnx - vnendx) ^ 2 ) +
-      ( (vny - vnendy) ^ 2 ) +
-      ( (vnz - vnendz) ^ 2 )
-  ) ^ 0.5
+  if ( is.null(mEndCoordinates) ) {
+    mEndCoordinates = matrix(rep(0, ncol(mStartCoordinates)), 1)
+  }
 
-  return(distResult)
+  vnDistance = 0
+
+  for ( i in seq(ncol(mStartCoordinates)) ) {
+
+    vnDistance = vnDistance + ( ( mStartCoordinates[,i] - mEndCoordinates[,i]) ^ 2 )
+
+  }
+
+  vnDistance = vnDistance ^ 0.5
+
+  return(vnDistance)
 
 }

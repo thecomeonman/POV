@@ -11,10 +11,6 @@ fGetProjectionsOnPlane = function(
     nScreenPlaneCoefficients
 ) {
 
-    # browser()
-
-    # print('--------')
-
     mLHSBase = matrix(nScreenPlaneCoefficients[1:3], ncol = 3)
     mRHSBase = matrix(nScreenPlaneCoefficients[4], ncol = 1)
 
@@ -22,6 +18,8 @@ fGetProjectionsOnPlane = function(
 
         # shouldn't try to interpolate the NA filler points
         # between two interpolated points
+        # should move this check to the parent function though and not keep it
+        # here
         bEvaluate = ifelse(
             is.na(mCoordinates[iCoordinatesRow, 1]),
             F,
@@ -32,17 +30,8 @@ fGetProjectionsOnPlane = function(
 
             vnPointToProject = mCoordinates[iCoordinatesRow,]
 
-            # print(vnPointToProject)
-            # vnPointToProject <<- vnPointToProject
-            # print(mOriginCoordinates)
-            # mOriginCoordinates <<- mOriginCoordinates
-            # print(nScreenPlaneCoefficients)
-            # nScreenPlaneCoefficients <<- nScreenPlaneCoefficients
-
             if ( all(!is.na(vnPointToProject))) {
 
-
-                # print(sum(nScreenPlaneCoefficients[1:3] * vnPointToProject))
                 if (
 
                     # on screen plane
@@ -68,8 +57,6 @@ fGetProjectionsOnPlane = function(
                     mRHS = mRHSBase
 
                     viCoefficientsToIncorporate = which(abs(vnPointToProject - mOriginCoordinates) > 0.0000000001)
-
-                    # print(viCoefficientsToIncorporate)
 
                     for ( iCoeff in setdiff(1:3, viCoefficientsToIncorporate) ) {
 

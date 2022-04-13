@@ -26,10 +26,8 @@ fPointLineSegmentDistanceVectorised = function(
 
    # if line segment start == line segment end then euclid distance
    vnDistanceBetweenStartEnd = fDistance(
-      vnStartX,
-      vnStartY,
-      vnEndX,
-      vnEndY
+      mStartCoordinates = cbind(vnStartX,vnStartY),
+      mEndCoordinates = cbind(vnEndX,vnEndY)
    )
 
    vnZeroDistances = vnDistanceBetweenStartEnd == 0
@@ -37,10 +35,8 @@ fPointLineSegmentDistanceVectorised = function(
    if ( any ( vnZeroDistances ) ) {
 
       vnDistances[vnZeroDistances] = fDistance(
-         vnX1 = vnX[vnZeroDistances],
-         vnY1 = vnY[vnZeroDistances],
-         vnX2 = vnStartX[vnZeroDistances],
-         vnY2 = vnStartY[vnZeroDistances]
+         mStartCoordinates = cbind(vnX[vnZeroDistances],vnY[vnZeroDistances]),
+         mEndCoordinates = cbind(vnStartX[vnZeroDistances],vnStartY[vnZeroDistances])
       )
 
    }
@@ -57,10 +53,11 @@ fPointLineSegmentDistanceVectorised = function(
       vnExtensions = pmax(0, pmin(1, vnExtensions))
 
       vnDistances[!vnZeroDistances] = fDistance(
-         vnX1 = vnX[!vnZeroDistances],
-         vnY1 = vnY[!vnZeroDistances],
-         vnX2 = vnStartX[!vnZeroDistances]  + (vnExtensions * (vnEndX[!vnZeroDistances] - vnStartX[!vnZeroDistances])),
-         vnY2 = vnStartY[!vnZeroDistances]  + (vnExtensions * (vnEndY[!vnZeroDistances] - vnStartY[!vnZeroDistances]))
+         mStartCoordinates = cbind(vnX[!vnZeroDistances],vnY[!vnZeroDistances]),
+         mEndCoordinates = cbind(
+            vnStartX[!vnZeroDistances]  + (vnExtensions * (vnEndX[!vnZeroDistances] - vnStartX[!vnZeroDistances])),
+            vnStartY[!vnZeroDistances]  + (vnExtensions * (vnEndY[!vnZeroDistances] - vnStartY[!vnZeroDistances]))
+         )
       )
 
    }

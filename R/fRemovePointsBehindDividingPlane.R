@@ -16,8 +16,8 @@
 fRemovePointsBehindDividingPlane = function(
     mCoordinates,
     nDivisionPlaneCoefficients,
-    bOriginDestinationInPositiveDirection,
-    iTreatAs
+    bOriginDestinationInPositiveDirection = T,
+    iTreatAs = 1
 ) {
 
     # print(bOriginDestinationInPositiveDirection)

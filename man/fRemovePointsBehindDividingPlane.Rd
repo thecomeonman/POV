@@ -8,8 +8,8 @@ fGetTransformedCoordinates.}
 fRemovePointsBehindDividingPlane(
   mCoordinates,
   nDivisionPlaneCoefficients,
-  bOriginDestinationInPositiveDirection,
-  iTreatAs
+  bOriginDestinationInPositiveDirection = T,
+  iTreatAs = 1
 )
 }
 \arguments{
