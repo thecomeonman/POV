@@ -34,7 +34,7 @@
 #'ggplot() +
 #'   geom_tile(
 #'      data = dt_grids_ls,
-#'      aes(x = block_x, y = block_y),
+#'      aes(x = x_block, y = y_block),
 #'      fill = 'cyan',
 #'      color = 'black'
 #'   ) +
@@ -204,11 +204,11 @@ fGetBlocksThroughWhichLineSegmentsPass =  function(
                c('x_cut','y_intersection'),
                c('x','y')
             )
-            dt_through_increment[, block_y := block[2] + (y_gap/2)]
+            dt_through_increment[, y_block := block[2] + (y_gap/2)]
 
             dt_through_increment = dt_through_increment[,
-               list(block_x = block[1] + c(x_gap/2,-x_gap/2)),
-               list(id,block_y,x,y)
+               list(x_block = block[1] + c(x_gap/2,-x_gap/2)),
+               list(id,y_block,x,y)
             ]
 
             dt_through = rbind(dt_through,dt_through_increment)
@@ -229,11 +229,11 @@ fGetBlocksThroughWhichLineSegmentsPass =  function(
                c('x_intersection','y_cut'),
                c('x','y')
             )
-            dt_through_increment[, block_x := block[1] + (x_gap/2)]
+            dt_through_increment[, x_block := block[1] + (x_gap/2)]
 
             dt_through_increment = dt_through_increment[,
-              list(block_y = block[2] + c(y_gap/2,-y_gap/2)),
-              list(id,block_x,x,y)
+              list(y_block = block[2] + c(y_gap/2,-y_gap/2)),
+              list(id,x_block,x,y)
             ]
 
             dt_through = rbind(dt_through,dt_through_increment)
@@ -249,7 +249,7 @@ fGetBlocksThroughWhichLineSegmentsPass =  function(
                                            list(
                                               passing_through = 1
                                            ),
-                                           list(id, x, y, block_x, block_y)
+                                           list(id, x, y, x_block, y_block)
    ]
 
 
@@ -257,7 +257,7 @@ fGetBlocksThroughWhichLineSegmentsPass =  function(
                                            list(
                                               passing_through = sum(passing_through)
                                            ),
-                                           list(id, block_x, block_y)
+                                           list(id, x_block, y_block)
    ]
 
 
@@ -267,19 +267,23 @@ fGetBlocksThroughWhichLineSegmentsPass =  function(
       'id'
    )
 
-   dt_passing_through = dt_passing_through[
-      (passing_through > 1) |
-      (
+   dt_passing_through = rbind(
+      dt_passing_through[
+         passing_through > 1
+      ][, comment := 'end' ],
+      dt_passing_through[
          (
-            abs(x - block_x) <= (x_gap/2) &
-            abs(y - block_y) <= (y_gap/2)
+            abs(x - x_block) <= (x_gap/2) &
+               abs(y - y_block) <= (y_gap/2)
          ) |
          (
-            abs(xend - block_x) <= (x_gap/2) &
-            abs(yend - block_y) <= (y_gap/2)
+            abs(xend - x_block) <= (x_gap/2) &
+               abs(yend - y_block) <= (y_gap/2)
          )
-      )
-   ]
+      ][, comment := 'through' ]
+   )
+
+   dt_passing_through = dt_passing_through[, list(id, comment, x_block, y_block)]
 
    dt_passing_through
 

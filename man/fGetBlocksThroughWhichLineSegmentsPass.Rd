@@ -54,7 +54,7 @@ library(ggplot2)
 ggplot() +
   geom_tile(
      data = dt_grids_ls,
-     aes(x = block_x, y = block_y),
+     aes(x = x_block, y = y_block),
      fill = 'cyan',
      color = 'black'
   ) +
