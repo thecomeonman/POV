@@ -47,8 +47,13 @@ fGetTransformedCoordinates = function (
     iTreatAs = 3
 ) {
 
+    # print('Start fGetTransformedCoordinates')
+    # print(Sys.time())
+
     # browser()
     # some input parameters that need to be pre computed
+    # print('input parms')
+    # print(Sys.time())
     if ( T ) {
 
         # this is the plane on which to project the data
@@ -63,6 +68,15 @@ fGetTransformedCoordinates = function (
             )
         )
 
+        mVectorPointingToScreen = mScreenCoordinates - mOriginCoordinates
+        mVectorPointingToScreen = fGetNormalVector(mVectorPointingToScreen)
+        mVectorPointingUpOnScreen = fGetNormalVector(fCrossProduct(
+            mVectorPointingToScreen,
+            fCrossProduct(
+                mVectorPointingUpOnScreen,
+                mVectorPointingToScreen
+            )
+        ))
 
         # We can't let points all the way till on the screen plane be visualised because
         # the coordinates for them will be ~inf. So we'll only include points which
@@ -74,28 +88,24 @@ fGetTransformedCoordinates = function (
 
         if ( is.null(mViewBeginsFromCoordinates) ) {
 
-            nDivisionPlaneCoefficients = fGetPlaneAt(
-                mOriginCoordinates = mOriginCoordinates,
-                mNormalVector = mScreenCoordinates - mOriginCoordinates
-                # nScreenPlaneCoefficients
-            )
-
-        } else {
-
-            nDivisionPlaneCoefficients = fGetPlaneAt(
-                mOriginCoordinates = mViewBeginsFromCoordinates,
-                mNormalVector = mScreenCoordinates - mViewBeginsFromCoordinates
-                # nScreenPlaneCoefficients
-            )
+            mViewBeginsFromCoordinates = ( 0.0000000000001 * ( mScreenCoordinates - mOriginCoordinates ) ) + mOriginCoordinates
 
         }
 
-        bOriginDestinationInPositiveDirection = sum(nDivisionPlaneCoefficients * c(mOriginCoordinates, 1)) < -0.00000000001
+        nDivisionPlaneCoefficients = fGetPlaneAt(
+            mOriginCoordinates = mViewBeginsFromCoordinates,
+            mNormalVector = mScreenCoordinates - mViewBeginsFromCoordinates
+            # nScreenPlaneCoefficients
+        )
+
+        bOriginDestinationInPositiveDirection = sum(nDivisionPlaneCoefficients * c(mOriginCoordinates, -1)) < -0.00000000001
 
     }
 
 
     # dropping repeat points
+    # print('dropping repeat')
+    # print(Sys.time())
     if ( T ) {
 
         viInputPoints = seq(nrow(mCoordinates))
@@ -140,6 +150,8 @@ fGetTransformedCoordinates = function (
 
     # adding points to handle cases where a path or a polygon is going across
     # the division plane
+    # print('division plane')
+    # print(Sys.time())
     if ( T ) {
 
         # print('m0')
@@ -190,6 +202,8 @@ fGetTransformedCoordinates = function (
 
 
     # projection on screen for points in front in 3d coordinates
+    # print('projection')
+    # print(Sys.time())
     if ( T ) {
 
         # adding a vertical vector for knowing which way points up
@@ -208,6 +222,8 @@ fGetTransformedCoordinates = function (
 
     # rotating projections WRT to screening plane so as to get points in
     # two coordinates
+    # print('rotating')
+    # print(Sys.time())
     if ( T ) {
 
         lNewAxes = fGetOrthogonalAxes(
@@ -229,6 +245,8 @@ fGetTransformedCoordinates = function (
     # that lies just a little below the lowest point in the viz or just a little
     # aboe the highest point in the viz so it can be chopped off with a ylim
     # you won't have poitns spilling outsdie the x boundaries
+    # print('placeholder')
+    # print(Sys.time())
     if ( T ) {
 
         viPointsToFillIn = which(is.na(mResult[, 1]))

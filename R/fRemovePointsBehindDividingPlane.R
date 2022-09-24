@@ -26,8 +26,8 @@ fRemovePointsBehindDividingPlane = function(
     # behind the screen so that closed polygons from the points ahead of the screen
     # can be computed
     vbCoordinatesToTransform = c(
-        bOriginDestinationInPositiveDirection == (
-            cbind(mCoordinates, -1) %*% nDivisionPlaneCoefficients >= 0
+        bOriginDestinationInPositiveDirection != (
+            cbind(mCoordinates, -1) %*% nDivisionPlaneCoefficients < -0.00000000001
         )
     )
 

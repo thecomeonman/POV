@@ -118,6 +118,7 @@ fGetProjectionsOnPlane = function(
 
                     # print(mLHS)
                     # print(mRHS)
+                    # TODO https://www.storyofmathematics.com/intersection-of-line-and-plane/ instead of solve?
                     mSolution = t(solve(mLHS, mRHS))
 
                 }
